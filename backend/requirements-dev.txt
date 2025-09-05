@@ -1,0 +1,25 @@
+# Include production requirements
+-r requirements.txt
+
+# Development-specific packages
+jupyter==1.0.0
+ipython==8.17.2
+
+# Testing
+pytest-xdist==3.5.0
+pytest-mock==3.12.0
+pytest-benchmark==4.0.0
+responses==0.24.1
+
+# Documentation
+mkdocs==1.5.3
+mkdocs-material==9.4.8
+mkdocstrings[python]==0.24.0
+
+# Debugging
+debugging==0.5.1
+icecream==2.1.3
+
+# Performance profiling
+py-spy==0.3.14
+memory-profiler==0.61.0

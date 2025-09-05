@@ -34,6 +34,7 @@ export interface PipelineStage {
 
 // Window interface extension for self-tests
 declare global {
+  // eslint-disable-next-line no-unused-vars
   interface Window {
     __I2S_TESTED__?: boolean;
   }
