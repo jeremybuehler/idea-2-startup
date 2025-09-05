@@ -343,12 +343,40 @@ const memoizedScoring = MemoizationHelper.memoize(
 
 ## 📚 **Documentation**
 
-### **Comprehensive Guides**
+### **🤖 Agent System Documentation**
+- **[Agent Overview](./docs/AGENTS.md)** - Complete multi-agent system documentation
+- **[System Architecture](./docs/ARCHITECTURE.md)** - High-level system design and infrastructure
+- **[Inter-Agent Communication](./docs/communication/MESSAGE_PASSING.md)** - Message formats and coordination patterns
+
+#### **Pipeline Agents (9 Sequential Stages)**
+- **[Normalize Agent](./docs/agents/pipeline/normalize.md)** - Input sanitization and validation
+- **[Research Agent](./docs/agents/pipeline/research.md)** - Market and competitor analysis *(documentation pending)*
+- **[Feasibility Agent](./docs/agents/pipeline/feasibility.md)** - Technical assessment *(documentation pending)*
+- **[Risk Agent](./docs/agents/pipeline/risk.md)** - Risk assessment and mitigation *(documentation pending)*
+- **[Export Agent](./docs/agents/pipeline/export.md)** - Final deliverable packaging *(documentation pending)*
+- *[Additional Pipeline Agents documentation in progress]*
+
+#### **Core System Agents (7 Orchestration)**
+- **[Conductor Agent](./docs/agents/core/conductor.md)** - Master orchestration and workflow management
+- **[Librarian Agent](./docs/agents/core/librarian.md)** - Knowledge management *(documentation pending)*
+- **[Market Analyst Agent](./docs/agents/core/market-analyst.md)** - Business intelligence *(documentation pending)*
+- **[Tech Architect Agent](./docs/agents/core/tech-architect.md)** - Technical design decisions *(documentation pending)*
+- **[LearningLoop Agent](./docs/agents/core/learningloop.md)** - Continuous improvement *(documentation pending)*
+- *[Additional Core Agents documentation in progress]*
+
+#### **Deployment Agents (5 Quality Gates)**
+- **[Security Agent](./docs/agents/deployment/security.md)** - Vulnerability scanning and compliance
+- **[Architecture Agent](./docs/agents/deployment/architecture.md)** - System design validation *(documentation pending)*
+- **[Testing Agent](./docs/agents/deployment/testing.md)** - Quality assurance and coverage *(documentation pending)*
+- **[Performance Agent](./docs/agents/deployment/performance.md)** - Runtime optimization *(documentation pending)*
+- **[Quality Agent](./docs/agents/deployment/quality.md)** - Code standards enforcement *(documentation pending)*
+
+### **📖 Development Guides**
 - **[WARP.md](./WARP.md)** - Complete development guide for WARP AI assistant
-- **[AGENT_DEPLOYMENT_SUMMARY.md](./AGENT_DEPLOYMENT_SUMMARY.md)** - Multi-agent system overview
+- **[AGENT_DEPLOYMENT_SUMMARY.md](./AGENT_DEPLOYMENT_SUMMARY.md)** - Multi-agent system deployment overview
 - **[ENHANCEMENT-SUMMARY.md](./ENHANCEMENT-SUMMARY.md)** - Feature enhancement details
 
-### **API Reference**
+### **🔧 API Reference**
 - **Business Logic**: Scoring algorithms and template generation
 - **Security Functions**: Input sanitization and validation  
 - **Performance Utils**: Async operations and optimization
