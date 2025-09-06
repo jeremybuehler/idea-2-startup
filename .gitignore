@@ -114,3 +114,24 @@ temp/
 
 # Local development
 .env.local
+
+# Security - Additional API key patterns to ignore
+*api_key*
+*API_KEY*
+*secret*
+*SECRET*
+*token*
+*TOKEN*
+*.key
+*.pem
+*.p12
+*.pfx
+config/secrets.yml
+secrets.json
+
+# IDE and editor files that might contain secrets
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.vscode/settings.json
