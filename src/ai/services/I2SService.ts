@@ -1,7 +1,7 @@
 import { ClaudeAIService } from './ClaudeAIService';
 import { Conductor } from '../agents/Conductor';
 import { IdeaContext, PipelineResult, PipelineProgress } from '../types/Pipeline';
-import { Dossier, IdeaScores } from '../../types';
+import { Dossier, IdeaScores } from '../../../types';
 import { EventEmitter } from 'events';
 
 interface I2SConfig {
