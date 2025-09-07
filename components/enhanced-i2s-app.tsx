@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useRef, useEffect } from "react"
+import React, { useMemo, useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import {
   Brain,
@@ -19,11 +19,9 @@ import {
   ServerCog,
   Github,
   Search,
-  Settings,
   Accessibility,
   Monitor,
   Smartphone,
-  Tablet,
   Sparkles,
   Zap,
   Target
@@ -49,10 +47,9 @@ import { FloatingElement } from "@/components/ui/floating-element"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 // Context
-import { useApp, useTheme, useProgress, useAccessibility } from "@/contexts/app-context"
+import { useTheme, useProgress, useAccessibility } from "@/contexts/app-context"
 
 // Utility imports (same as original)
-import JSZip from "jszip"
 
 // Animation variants
 const fadeInUp = {
@@ -69,11 +66,6 @@ const staggerChildren = {
   }
 }
 
-const scaleIn = {
-  initial: { scale: 0.9, opacity: 0 },
-  animate: { scale: 1, opacity: 1 },
-  exit: { scale: 0.9, opacity: 0 }
-}
 
 // Enhanced Pipeline Stage Component
 interface PipelineStageProps {

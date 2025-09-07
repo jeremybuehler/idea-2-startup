@@ -134,12 +134,18 @@ export class ClaudeAIService {
     let fullContent = '';
     
     try {
+      // Separate system messages from user/assistant messages
+      const systemMessages = messages.filter(msg => msg.role === 'system');
+      const conversationMessages = messages.filter(msg => msg.role !== 'system');
+      const systemContent = systemMessages.map(msg => msg.content).join('\n');
+      
       const stream = await this.claude.messages.create({
         model: config.model!,
         max_tokens: config.maxTokens!,
         temperature: config.temperature!,
-        messages: messages.map(msg => ({
-          role: msg.role,
+        system: systemContent || undefined,
+        messages: conversationMessages.map(msg => ({
+          role: msg.role as 'user' | 'assistant',
           content: msg.content
         })),
         stream: true
@@ -180,12 +186,18 @@ export class ClaudeAIService {
     attempt: number = 1
   ): Promise<Anthropic.Messages.Message> {
     try {
+      // Separate system messages from user/assistant messages
+      const systemMessages = messages.filter(msg => msg.role === 'system');
+      const conversationMessages = messages.filter(msg => msg.role !== 'system');
+      const systemContent = systemMessages.map(msg => msg.content).join('\n');
+      
       return await this.claude.messages.create({
         model: config.model!,
         max_tokens: config.maxTokens!,
         temperature: config.temperature!,
-        messages: messages.map(msg => ({
-          role: msg.role,
+        system: systemContent || undefined,
+        messages: conversationMessages.map(msg => ({
+          role: msg.role as 'user' | 'assistant',
           content: msg.content
         }))
       });

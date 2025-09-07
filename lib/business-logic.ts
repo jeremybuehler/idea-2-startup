@@ -4,7 +4,7 @@
  */
 
 import { IdeaScores } from '@/types';
-import { sanitizeUserInput, sanitizeForJSON, sanitizeForMarkdown, sanitizeProjectSlug } from './security';
+import { sanitizeUserInput, sanitizeForMarkdown, sanitizeProjectSlug } from './security';
 
 /**
  * Scores an idea based on multiple business criteria

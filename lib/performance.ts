@@ -17,7 +17,7 @@ export class AsyncZipGenerator {
   static async generateRepoZip(
     slug: string,
     dossier: Pick<Dossier, 'prd' | 'runbook' | 'repo' | 'api'>,
-    onProgress?: (progress: number) => void
+    onProgress?: (_progress: number) => void
   ): Promise<Blob> {
     const safeSlug = sanitizeProjectSlug(slug);
     const zip = new JSZip();
