@@ -116,7 +116,7 @@ module.exports = {
         "floating": "floating 3s ease-in-out infinite",
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter Variable', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       boxShadow: {

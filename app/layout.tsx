@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
+import '@fontsource-variable/inter'
+import '@fontsource/jetbrains-mono/latin.css'
 
 export const metadata: Metadata = {
   title: 'I2S Studio - Idea to Startup Studio',
@@ -35,7 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full antialiased`}>
+      <body className="h-full antialiased">
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
           {children}
         </div>

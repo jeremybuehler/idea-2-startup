@@ -1,8 +1,9 @@
+import { EventEmitter } from 'events';
+import { TemplateGenerator, scoreIdea, toSlug } from '@/lib/business-logic';
+import { Dossier } from '@/types';
 import { ClaudeAIService } from './ClaudeAIService';
 import { Conductor } from '../agents/Conductor';
-import { IdeaContext, PipelineResult, PipelineProgress } from '../types/Pipeline';
-import { Dossier, IdeaScores } from '../../../types';
-import { EventEmitter } from 'events';
+import { IdeaContext, PipelineProgress } from '../types/Pipeline';
 
 interface I2SConfig {
   apiKey: string;
@@ -12,8 +13,8 @@ interface I2SConfig {
 }
 
 export class I2SService extends EventEmitter {
-  private claude: ClaudeAIService;
-  private conductor: Conductor;
+  private claude?: ClaudeAIService;
+  private conductor?: Conductor;
   private config: I2SConfig;
   private activePipelines = new Map<string, PipelineExecution>();
 
@@ -22,19 +23,25 @@ export class I2SService extends EventEmitter {
     this.config = config;
     
     if (config.enableLiveMode && config.apiKey) {
-      this.claude = new ClaudeAIService(config.apiKey);
-      this.conductor = new Conductor(this.claude, {
-        qualityThreshold: config.defaultQualityThreshold,
-        budgetLimit: config.defaultBudgetLimit
-      });
-      
-      // Forward conductor events
-      this.conductor.on('pipeline:completed', (data) => this.emit('pipeline:completed', data));
-      this.conductor.on('pipeline:failed', (data) => this.emit('pipeline:failed', data));
-      this.conductor.on('stage:started', (data) => this.emit('stage:started', data));
-      this.conductor.on('stage:completed', (data) => this.emit('stage:completed', data));
-      this.conductor.on('stage:failed', (data) => this.emit('stage:failed', data));
+      this.initializeLiveServices(config.apiKey);
     }
+  }
+
+  private initializeLiveServices(apiKey: string): void {
+    const claude = new ClaudeAIService(apiKey);
+    const conductor = new Conductor(claude, {
+      qualityThreshold: this.config.defaultQualityThreshold,
+      budgetLimit: this.config.defaultBudgetLimit
+    });
+
+    this.claude = claude;
+    this.conductor = conductor;
+
+    conductor.on('pipeline:completed', (data) => this.emit('pipeline:completed', data));
+    conductor.on('pipeline:failed', (data) => this.emit('pipeline:failed', data));
+    conductor.on('stage:started', (data) => this.emit('stage:started', data));
+    conductor.on('stage:completed', (data) => this.emit('stage:completed', data));
+    conductor.on('stage:failed', (data) => this.emit('stage:failed', data));
   }
 
   /**
@@ -88,7 +95,12 @@ export class I2SService extends EventEmitter {
     };
 
     // Execute pipeline
-    const result = await this.conductor.executePipeline(context);
+    const conductor = this.conductor;
+    if (!conductor) {
+      throw new Error('Conductor not initialized for live pipeline execution.');
+    }
+
+    const result = await conductor.executePipeline(context);
     
     // Convert to expected Dossier format
     return result.dossier;
@@ -101,11 +113,6 @@ export class I2SService extends EventEmitter {
     ideaText: string,
     options: any
   ): Promise<Dossier> {
-    // Import existing simulated functions
-    const { makePRD, makeRunbook, makeRepoTree, makeAPISketch } = await import('../../lib/generators');
-    const { scoreIdea } = await import('../../lib/scoring');
-    const { toSlug } = await import('../../lib/utils');
-    
     // Generate title and one-liner
     const title = this.generateTitle(ideaText);
     const oneLiner = this.generateOneLiner(ideaText);
@@ -116,10 +123,10 @@ export class I2SService extends EventEmitter {
     
     // Generate artifacts
     const [prd, runbook, repo, api] = await Promise.all([
-      makePRD(title, oneLiner, ideaText, scores),
-      makeRunbook(title, slug, scores),
-      makeRepoTree(title, slug),
-      makeAPISketch(title, slug, oneLiner)
+      TemplateGenerator.makePRD(title, oneLiner, ideaText, scores),
+      TemplateGenerator.makeRunbook(title),
+      TemplateGenerator.makeRepoTree(slug),
+      TemplateGenerator.makeAPISketch()
     ]);
 
     // Build dossier
@@ -188,21 +195,26 @@ export class I2SService extends EventEmitter {
     let finalResult: Dossier;
     
     // Set up progress tracking
+    const conductor = this.conductor;
+    if (!conductor) {
+      throw new Error('Conductor not initialized for live pipeline execution.');
+    }
+
     const progressListener = (data: any) => {
       this.emit('progress', data.progress);
     };
     
-    this.conductor.on('stage:started', progressListener);
-    this.conductor.on('stage:completed', progressListener);
+    conductor.on('stage:started', progressListener);
+    conductor.on('stage:completed', progressListener);
     
     try {
       // Start pipeline execution
-      const pipelinePromise = this.conductor.executePipeline(context);
+      const pipelinePromise = conductor.executePipeline(context);
       
       // Yield progress updates
       while (true) {
         // Check if pipeline is complete
-        const activeExecutions = this.conductor.getActiveExecutions();
+        const activeExecutions = conductor.getActiveExecutions();
         const execution = activeExecutions.find(e => e.context.ideaText === ideaText);
         
         if (!execution) {
@@ -221,8 +233,8 @@ export class I2SService extends EventEmitter {
       finalResult = result.dossier;
       
     } finally {
-      this.conductor.off('stage:started', progressListener);
-      this.conductor.off('stage:completed', progressListener);
+      conductor.off('stage:started', progressListener);
+      conductor.off('stage:completed', progressListener);
     }
     
     return finalResult!;
@@ -262,8 +274,10 @@ export class I2SService extends EventEmitter {
     };
     error?: string;
   }> {
-    
-    if (!this.config.enableLiveMode || !this.claude) {
+    const claude = this.claude;
+    const conductor = this.conductor;
+
+    if (!this.config.enableLiveMode || !claude || !conductor) {
       return {
         healthy: true,
         mode: 'simulated'
@@ -272,8 +286,8 @@ export class I2SService extends EventEmitter {
 
     try {
       const [health, stats] = await Promise.all([
-        this.claude.healthCheck(),
-        this.claude.getCostStats()
+        claude.healthCheck(),
+        claude.getCostStats()
       ]);
 
       return {
@@ -282,7 +296,7 @@ export class I2SService extends EventEmitter {
         stats: {
           totalCost: stats.totalCost,
           cacheHitRate: stats.cacheHitRate,
-          activePipelines: this.conductor.getActiveExecutions().length
+          activePipelines: conductor.getActiveExecutions().length
         },
         error: health.error
       };
@@ -352,11 +366,10 @@ export class I2SService extends EventEmitter {
     // Reinitialize services if needed
     if (config.apiKey || config.enableLiveMode !== undefined) {
       if (this.config.enableLiveMode && this.config.apiKey) {
-        this.claude = new ClaudeAIService(this.config.apiKey);
-        this.conductor = new Conductor(this.claude, {
-          qualityThreshold: this.config.defaultQualityThreshold,
-          budgetLimit: this.config.defaultBudgetLimit
-        });
+        this.initializeLiveServices(this.config.apiKey);
+      } else {
+        this.claude = undefined;
+        this.conductor = undefined;
       }
     }
   }
