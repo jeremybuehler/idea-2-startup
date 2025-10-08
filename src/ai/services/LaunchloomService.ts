@@ -5,6 +5,9 @@ import { LaunchloomAgentsService } from './LaunchloomAgentsService';
 import { ResearchService } from './ResearchService';
 import { ComplianceService } from './ComplianceService';
 import { EvaluationService } from './EvaluationService';
+import { WorkspaceService } from './WorkspaceService';
+import { IntegrationRegistry } from './IntegrationRegistry';
+import { ManagedOpsService } from './ManagedOpsService';
 import { Conductor } from '../agents/Conductor';
 import { IdeaContext, PipelineProgress, PipelineRunConfig, PipelineResult, StageMetric } from '../types/Pipeline';
 import { ComplianceReport } from '../types/compliance';
@@ -23,6 +26,9 @@ export class LaunchloomService extends EventEmitter {
   private researchService: ResearchService;
   private complianceService: ComplianceService;
   private evaluationService: EvaluationService;
+  private workspaceService: WorkspaceService;
+  private integrationRegistry: IntegrationRegistry;
+  private managedOpsService: ManagedOpsService;
   private config: LaunchloomServiceConfig;
   private activePipelines = new Map<string, PipelineExecution>();
 
@@ -32,6 +38,9 @@ export class LaunchloomService extends EventEmitter {
     this.researchService = new ResearchService();
     this.complianceService = new ComplianceService();
     this.evaluationService = new EvaluationService();
+    this.workspaceService = new WorkspaceService();
+    this.integrationRegistry = new IntegrationRegistry();
+    this.managedOpsService = new ManagedOpsService();
     
     if (config.enableLiveMode && config.apiKey) {
       this.initializeLiveServices(config.apiKey);
@@ -70,6 +79,8 @@ export class LaunchloomService extends EventEmitter {
       qualityThreshold?: number;
       maxCost?: number;
       pipelineConfig?: PipelineRunConfig;
+      workspaceId?: string;
+      workspaceName?: string;
     } = {}
   ): Promise<Dossier> {
     
@@ -110,6 +121,7 @@ export class LaunchloomService extends EventEmitter {
     result.metadata.compliance = compliance;
     result.metadata.evaluation = this.evaluationService.assess(result.dossier, result);
     this.logTelemetry(result);
+    this.recordWorkspaceRun(options.workspaceId, options.workspaceName, result);
 
     // Convert to expected Dossier format
     return result.dossier;
@@ -170,6 +182,7 @@ export class LaunchloomService extends EventEmitter {
     }
     simulatedResult.metadata.evaluation = this.evaluationService.assess(dossier, simulatedResult as any)
     this.logTelemetry(simulatedResult as any)
+    this.recordWorkspaceRun(options.workspaceId, options.workspaceName, simulatedResult as any)
 
     return dossier;
   }
@@ -439,11 +452,28 @@ export class LaunchloomService extends EventEmitter {
         totalCost: result.metadata.totalCost,
         stageMetrics: result.metadata.stageMetrics,
         complianceStatus: result.metadata.compliance?.status,
-        evaluationScore: result.metadata.evaluation?.score
+        evaluationScore: result.metadata.evaluation?.score,
+        integrations: this.integrationRegistry.list().map(integration => integration.id)
       })
     } catch (error) {
       console.warn('Telemetry logging failed', error)
     }
+  }
+
+  private recordWorkspaceRun(workspaceId: string | undefined, workspaceName: string | undefined, result: PipelineResult | PipelineResultLike): void {
+    if (!workspaceId) return
+    const workspace = this.workspaceService.ensureWorkspace(workspaceId, workspaceName)
+    const complianceStatus = result.metadata.compliance?.status ?? 'pass'
+    const evaluationScore = result.metadata.evaluation?.score ?? 0
+    this.workspaceService.recordRun(workspace.id, {
+      runId: (result as PipelineResult).executionId ?? `sim-${Date.now()}`,
+      idea: result.dossier.title,
+      createdAt: new Date().toISOString(),
+      complianceStatus,
+      evaluationScore,
+      cost: result.metadata.totalCost
+    })
+    this.managedOpsService.record((result as PipelineResult).executionId ?? `sim-${Date.now()}`, result.metadata.evaluation, result.metadata.compliance)
   }
 }
 
@@ -455,6 +485,7 @@ interface PipelineExecution {
 }
 
 interface PipelineResultLike {
+  executionId?: string;
   dossier: Dossier;
   metadata: {
     processingTime: number;

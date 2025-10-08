@@ -26,7 +26,7 @@ git log --oneline -5          # View recent commits
 
 ## Project Overview
 
-**Launchloom** is a Next.js 14 application that weaves raw ideas into structured agent deliverables—PRDs, runbooks, code scaffolds, and compliance briefs. It operates in two modes: a simulated mode for fast demos and a live API mode for production-grade runs. Configure `NEXT_PUBLIC_LEAD_CAPTURE_URL` to change the default Formspree endpoint (`https://formspree.io/f/mgeglbpz`) to your preferred webhook (Airtable, Zapier, CRM).
+**Launchloom** is a Next.js 14 application that weaves raw ideas into structured agent deliverables—PRDs, runbooks, code scaffolds, and compliance briefs. It operates in two modes: a simulated mode for fast demos and a live API mode for production-grade runs. Configure `NEXT_PUBLIC_LEAD_CAPTURE_URL` to change the default Formspree endpoint (`https://formspree.io/f/mgeglbpz`) to your preferred webhook (Airtable, Zapier, CRM). Optional workspace defaults (`LAUNCHLOOM_DEFAULT_WORKSPACE_ID`, `LAUNCHLOOM_DEFAULT_WORKSPACE_NAME`) seed multi-tenant telemetry when testing.
 
 ## Architecture
 

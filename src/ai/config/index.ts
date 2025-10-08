@@ -15,6 +15,8 @@ const config = {
   // Development settings
   isDevelopment: process.env.NODE_ENV === 'development',
   logLevel: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug'),
+  defaultWorkspaceId: process.env.LAUNCHLOOM_DEFAULT_WORKSPACE_ID,
+  defaultWorkspaceName: process.env.LAUNCHLOOM_DEFAULT_WORKSPACE_NAME,
 };
 
 // Validate configuration

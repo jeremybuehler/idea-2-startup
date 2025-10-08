@@ -21,6 +21,12 @@ Launchloom hands you a premium dossier in a single run:
 - **Compliance snapshot** with license hygiene, risk posture, and budget trace
 - **Founder debrief** so teams know exactly how to ship the first slice
 
+### 🗂️ Multi-Workspace Operations (Studio Preview)
+
+- Track concierge runs across workspaces with cost/compliance/evaluation telemetry
+- Managed ops log keeps recent evaluation/compliance results for human review
+- Integration registry lists available connectors (Slack, GitHub, Airtable) for future automation
+
 ## ✨ **Used by Innovators Who Value**
 
 **Speed** • **Structure** • **Security** • **Scalability** • **Professional Documentation**
@@ -234,6 +240,10 @@ NEXT_PUBLIC_API_BASE=                # Backend API base URL when live
 
 # Optional lead capture (e.g. Formspree, Airtable, Zapier webhook)
 NEXT_PUBLIC_LEAD_CAPTURE_URL=https://formspree.io/f/mgeglbpz  # Default Formspree endpoint (replace with your own)
+
+# Optional workspace defaults
+LAUNCHLOOM_DEFAULT_WORKSPACE_ID=launchloom-demo
+LAUNCHLOOM_DEFAULT_WORKSPACE_NAME="Launchloom Demo Workspace"
 
 # Build-time Variables  
 APP_NAME="Launchloom"                # Application name
