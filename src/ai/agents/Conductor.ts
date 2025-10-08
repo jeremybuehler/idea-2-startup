@@ -1,4 +1,6 @@
 import { LaunchloomAgentsService } from '../services/LaunchloomAgentsService';
+import { ResearchService } from '../services/ResearchService';
+import { MarketIntel } from '../types/market';
 import { Logger } from '../utils/Logger';
 import { IdeaContext, PipelineStage, PipelineResult, PipelineProgress } from '../types/Pipeline';
 import { EventEmitter } from 'events';
@@ -25,6 +27,7 @@ interface StageExecution {
 
 export class Conductor extends EventEmitter {
   private agentService: LaunchloomAgentsService;
+  private researchService?: ResearchService;
   private logger: Logger;
   private config: ConductorConfig;
   
@@ -48,9 +51,10 @@ export class Conductor extends EventEmitter {
     totalCost: number;
   }>();
 
-  constructor(agentService: LaunchloomAgentsService, config?: Partial<ConductorConfig>) {
+  constructor(agentService: LaunchloomAgentsService, researchService?: ResearchService, config?: Partial<ConductorConfig>) {
     super();
     this.agentService = agentService;
+    this.researchService = researchService;
     this.logger = new Logger('Conductor');
     this.config = {
       maxConcurrentStages: 2,
@@ -178,6 +182,9 @@ export class Conductor extends EventEmitter {
         
         execution.totalCost += stageResult.cost;
         results[stage] = stageResult.content;
+        if (stageResult.supportingIntel) {
+          results.__marketIntel = stageResult.supportingIntel;
+        }
         overallQuality += stageResult.quality;
         stagesCompleted++;
 
@@ -248,7 +255,8 @@ export class Conductor extends EventEmitter {
         processingTime: Date.now() - execution.startTime,
         totalCost: execution.totalCost,
         stagesCompleted,
-        agentsInvolved: this.stages.slice(0, stagesCompleted)
+        agentsInvolved: this.stages.slice(0, stagesCompleted),
+        marketIntel: results.__marketIntel
       },
       overallQuality
     };
@@ -264,7 +272,7 @@ export class Conductor extends EventEmitter {
     stage: PipelineStage,
     previousResults: Record<string, any>,
     stageExecution: StageExecution
-  ): Promise<{ content: any; quality: number; cost: number }> {
+  ): Promise<{ content: any; quality: number; cost: number; supportingIntel?: MarketIntel }> {
     
     for (let attempt = 0; attempt <= this.config.retryAttempts; attempt++) {
       try {
@@ -303,10 +311,16 @@ export class Conductor extends EventEmitter {
     context: IdeaContext,
     stage: PipelineStage,
     previousResults: Record<string, any>
-  ): Promise<{ content: any; quality: number; cost: number }> {
-    
-    const prompt = this.buildStagePrompt(context, stage, previousResults);
-    
+  ): Promise<{ content: any; quality: number; cost: number; supportingIntel?: MarketIntel }> {
+    let supportingIntel: MarketIntel | undefined
+
+    if (stage === 'research' && this.researchService) {
+      supportingIntel = await this.researchService.getMarketIntel(context)
+      previousResults.__marketIntel = supportingIntel
+    }
+
+    const prompt = this.buildStagePrompt(context, stage, previousResults, supportingIntel);
+
     const response = await this.agentService.sendMessage([
       { role: 'system', content: this.getSystemPromptForStage(stage) },
       { role: 'user', content: prompt }
@@ -323,7 +337,8 @@ export class Conductor extends EventEmitter {
     return {
       content,
       quality,
-      cost: response.usage.cost
+      cost: response.usage.cost,
+      supportingIntel
     };
   }
 
@@ -333,7 +348,8 @@ export class Conductor extends EventEmitter {
   private buildStagePrompt(
     context: IdeaContext,
     stage: PipelineStage,
-    previousResults: Record<string, any>
+    previousResults: Record<string, any>,
+    supportingIntel?: MarketIntel
   ): string {
     const baseContext = `
 Startup Idea: "${context.ideaText}"
@@ -364,7 +380,7 @@ Conduct comprehensive market research. Provide:
 4. Potential challenges and barriers
 5. Initial PRD outline
 
-Format as JSON with keys: marketSize, competitors, opportunities, challenges, prd`,
+${supportingIntel ? `Existing market intel (use as grounding data):\n${JSON.stringify(supportingIntel, null, 2)}\n\n` : ''}Format as JSON with keys: marketSize, competitors, opportunities, challenges, prd`,
 
       feasibility: `${baseContext}
 ${this.formatPreviousResults(previousResults)}

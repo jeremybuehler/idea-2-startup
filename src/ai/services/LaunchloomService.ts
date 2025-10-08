@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import { TemplateGenerator, scoreIdea, toSlug } from '@/lib/business-logic';
 import { Dossier } from '@/types';
 import { LaunchloomAgentsService } from './LaunchloomAgentsService';
+import { ResearchService } from './ResearchService';
 import { Conductor } from '../agents/Conductor';
 import { IdeaContext, PipelineProgress } from '../types/Pipeline';
 
@@ -15,12 +16,14 @@ interface LaunchloomServiceConfig {
 export class LaunchloomService extends EventEmitter {
   private agents?: LaunchloomAgentsService;
   private conductor?: Conductor;
+  private researchService: ResearchService;
   private config: LaunchloomServiceConfig;
   private activePipelines = new Map<string, PipelineExecution>();
 
   constructor(config: LaunchloomServiceConfig) {
     super();
     this.config = config;
+    this.researchService = new ResearchService();
     
     if (config.enableLiveMode && config.apiKey) {
       this.initializeLiveServices(config.apiKey);
@@ -29,7 +32,7 @@ export class LaunchloomService extends EventEmitter {
 
   private initializeLiveServices(apiKey: string): void {
     const launchloomAgents = new LaunchloomAgentsService(apiKey);
-    const conductor = new Conductor(launchloomAgents, {
+    const conductor = new Conductor(launchloomAgents, this.researchService, {
       qualityThreshold: this.config.defaultQualityThreshold,
       budgetLimit: this.config.defaultBudgetLimit
     });

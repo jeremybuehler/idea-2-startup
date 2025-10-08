@@ -1,5 +1,7 @@
 // Core pipeline types for Launchloom agent system
 
+import { MarketIntel } from './market'
+
 export type PipelineStage = 
   | 'normalize'
   | 'research'
@@ -62,6 +64,7 @@ export interface PipelineResult {
     totalCost: number;
     stagesCompleted: number;
     agentsInvolved: PipelineStage[];
+    marketIntel?: MarketIntel;
   };
   overallQuality: number;
 }
