@@ -7,6 +7,12 @@ import JSZip from 'jszip';
 import { Dossier } from '@/types';
 import { sanitizeProjectSlug } from './security';
 
+/* eslint-disable no-unused-vars */
+type AnyFunction = (...args: any[]) => any;
+type ProgressHandler = (progress: number) => void;
+type MemoKeyGenerator<T extends AnyFunction> = (...fnArgs: Parameters<T>) => string;
+/* eslint-enable no-unused-vars */
+
 /**
  * Async ZIP generation to prevent UI blocking
  */
@@ -17,7 +23,7 @@ export class AsyncZipGenerator {
   static async generateRepoZip(
     slug: string,
     dossier: Pick<Dossier, 'prd' | 'runbook' | 'repo' | 'api'>,
-    onProgress?: (_progress: number) => void
+    onProgress?: ProgressHandler
   ): Promise<Blob> {
     const safeSlug = sanitizeProjectSlug(slug);
     const zip = new JSZip();
@@ -201,20 +207,21 @@ export class MemoizationHelper {
   /**
    * Memoize expensive computations with TTL
    */
-  static memoize<T extends (...args: any[]) => any>(
+  static memoize<T extends AnyFunction>(
     fn: T,
-    keyGenerator: (...args: Parameters<T>) => string,
+    keyGenerator: MemoKeyGenerator<T>,
     ttl: number = 5 * 60 * 1000 // 5 minutes default
   ): T {
-    return ((...args: Parameters<T>) => {
-      const key = keyGenerator(...args);
+    // eslint-disable-next-line no-unused-vars
+    return ((...fnArgs: Parameters<T>) => {
+      const key = keyGenerator(...fnArgs);
       const cached = this.cache.get(key);
       
       if (cached && Date.now() - cached.timestamp < ttl) {
         return cached.value;
       }
       
-      const result = fn(...args);
+      const result = fn(...fnArgs);
       
       // Prevent cache from growing too large
       if (this.cache.size >= this.maxSize) {
@@ -290,28 +297,30 @@ export const OptimizationHelpers = {
   /**
    * Debounce function for performance
    */
-  debounce: <T extends (...args: any[]) => any>(
+  debounce: <T extends AnyFunction>(
     func: T,
     wait: number
   ): T => {
     let timeout: NodeJS.Timeout;
-    return ((...args: Parameters<T>) => {
+    // eslint-disable-next-line no-unused-vars
+    return ((...fnArgs: Parameters<T>) => {
       clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(null, args), wait);
+      timeout = setTimeout(() => func(...fnArgs), wait);
     }) as T;
   },
 
   /**
    * Throttle function for performance
    */
-  throttle: <T extends (...args: any[]) => any>(
+  throttle: <T extends AnyFunction>(
     func: T,
     limit: number
   ): T => {
     let inThrottle: boolean;
-    return ((...args: Parameters<T>) => {
+    // eslint-disable-next-line no-unused-vars
+    return ((...fnArgs: Parameters<T>) => {
       if (!inThrottle) {
-        func.apply(null, args);
+        func(...fnArgs);
         inThrottle = true;
         setTimeout(() => inThrottle = false, limit);
       }

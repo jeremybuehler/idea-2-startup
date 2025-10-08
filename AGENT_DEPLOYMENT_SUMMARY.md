@@ -194,4 +194,4 @@ The Idea-to-Startup Studio has been successfully transformed from a vulnerable p
 
 ---
 
-*Deployed by Claude Multi-Agent System | Excellence in Parallel Code Engineering*
+*Deployed by Codex Agents Orchestrator | Excellence in Parallel Code Engineering*

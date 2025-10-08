@@ -2,8 +2,8 @@ import { createI2SService, I2SService } from '../services/I2SService';
 
 // Environment configuration
 const config = {
-  // Claude API configuration
-  apiKey: process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY || '',
+  // Codex Agents / OpenAI API configuration
+  apiKey: process.env.CODEX_API_KEY || process.env.OPENAI_API_KEY || '',
   
   // Feature flags
   enableLiveMode: process.env.NEXT_PUBLIC_USE_LIVE === 'true' || false,
@@ -20,7 +20,7 @@ const config = {
 // Validate configuration
 function validateConfig() {
   if (config.enableLiveMode && !config.apiKey) {
-    console.warn('Live mode enabled but no Claude API key found. Falling back to simulated mode.');
+    console.warn('Live mode enabled but no Codex Agents API key found. Falling back to simulated mode.');
     config.enableLiveMode = false;
   }
   

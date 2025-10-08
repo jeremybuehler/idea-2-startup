@@ -693,7 +693,7 @@ export default function EnhancedI2SApp() {
                       className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg"
                     >
                       {useLive && apiBase 
-                        ? "Calling live backend..." 
+                        ? "Orchestrating Codex agents..." 
                         : "Processing: capture → research → design → scaffold..."
                       }
                     </motion.div>

@@ -334,7 +334,7 @@ const blob = await AsyncZipGenerator.generateRepoZip(
 // Memoize expensive operations
 const memoizedScoring = MemoizationHelper.memoize(
   scoreIdea,
-  (idea) => `score_${idea}`,
+  ([idea]) => `score_${idea}`,
   300000 // 5 minute TTL
 );
 ```

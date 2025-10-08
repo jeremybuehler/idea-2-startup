@@ -16,7 +16,7 @@
     "validate": "npm run type-check && npm run lint && npm test"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.14.0",
+    "@openai/agents": "^0.1.9",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",

@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { TemplateGenerator, scoreIdea, toSlug } from '@/lib/business-logic';
 import { Dossier } from '@/types';
-import { ClaudeAIService } from './ClaudeAIService';
+import { CodexAgentsService } from './CodexAgentsService';
 import { Conductor } from '../agents/Conductor';
 import { IdeaContext, PipelineProgress } from '../types/Pipeline';
 
@@ -13,7 +13,7 @@ interface I2SConfig {
 }
 
 export class I2SService extends EventEmitter {
-  private claude?: ClaudeAIService;
+  private codex?: CodexAgentsService;
   private conductor?: Conductor;
   private config: I2SConfig;
   private activePipelines = new Map<string, PipelineExecution>();
@@ -28,13 +28,13 @@ export class I2SService extends EventEmitter {
   }
 
   private initializeLiveServices(apiKey: string): void {
-    const claude = new ClaudeAIService(apiKey);
-    const conductor = new Conductor(claude, {
+    const codex = new CodexAgentsService(apiKey);
+    const conductor = new Conductor(codex, {
       qualityThreshold: this.config.defaultQualityThreshold,
       budgetLimit: this.config.defaultBudgetLimit
     });
 
-    this.claude = claude;
+    this.codex = codex;
     this.conductor = conductor;
 
     conductor.on('pipeline:completed', (data) => this.emit('pipeline:completed', data));
@@ -65,7 +65,7 @@ export class I2SService extends EventEmitter {
     const useLive = this.config.enableLiveMode && (options.useLive !== false);
     
     if (useLive && this.conductor) {
-      return await this.processWithClaude(ideaText, options);
+      return await this.processWithCodex(ideaText, options);
     } else {
       // Fallback to simulated mode (existing functionality)
       return await this.processSimulated(ideaText, options);
@@ -73,9 +73,9 @@ export class I2SService extends EventEmitter {
   }
 
   /**
-   * Process idea using Claude-powered agents
+   * Process idea using Codex-powered agents
    */
-  private async processWithClaude(
+  private async processWithCodex(
     ideaText: string,
     options: any
   ): Promise<Dossier> {
@@ -177,7 +177,7 @@ export class I2SService extends EventEmitter {
       return await this.processSimulated(ideaText, options);
     }
 
-    // Real streaming with Claude
+    // Real streaming with Codex
     const context: IdeaContext = {
       ideaText,
       userId: options.userId,
@@ -269,15 +269,16 @@ export class I2SService extends EventEmitter {
     mode: 'live' | 'simulated';
     stats?: {
       totalCost: number;
-      cacheHitRate: number;
+      averageCostPerRequest: number;
+      requestCount: number;
       activePipelines: number;
     };
     error?: string;
   }> {
-    const claude = this.claude;
+    const codex = this.codex;
     const conductor = this.conductor;
 
-    if (!this.config.enableLiveMode || !claude || !conductor) {
+    if (!this.config.enableLiveMode || !codex || !conductor) {
       return {
         healthy: true,
         mode: 'simulated'
@@ -286,8 +287,8 @@ export class I2SService extends EventEmitter {
 
     try {
       const [health, stats] = await Promise.all([
-        claude.healthCheck(),
-        claude.getCostStats()
+        codex.healthCheck(),
+        codex.getCostStats()
       ]);
 
       return {
@@ -295,7 +296,8 @@ export class I2SService extends EventEmitter {
         mode: 'live',
         stats: {
           totalCost: stats.totalCost,
-          cacheHitRate: stats.cacheHitRate,
+          averageCostPerRequest: stats.averageCostPerRequest,
+          requestCount: stats.requestCount,
           activePipelines: conductor.getActiveExecutions().length
         },
         error: health.error
@@ -368,7 +370,7 @@ export class I2SService extends EventEmitter {
       if (this.config.enableLiveMode && this.config.apiKey) {
         this.initializeLiveServices(this.config.apiKey);
       } else {
-        this.claude = undefined;
+        this.codex = undefined;
         this.conductor = undefined;
       }
     }

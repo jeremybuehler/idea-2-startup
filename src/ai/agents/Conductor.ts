@@ -1,4 +1,4 @@
-import { ClaudeAIService, ClaudeMessage } from '../services/ClaudeAIService';
+import { CodexAgentsService } from '../services/CodexAgentsService';
 import { Logger } from '../utils/Logger';
 import { IdeaContext, PipelineStage, PipelineResult, PipelineProgress } from '../types/Pipeline';
 import { EventEmitter } from 'events';
@@ -24,7 +24,7 @@ interface StageExecution {
 }
 
 export class Conductor extends EventEmitter {
-  private claude: ClaudeAIService;
+  private codex: CodexAgentsService;
   private logger: Logger;
   private config: ConductorConfig;
   
@@ -48,9 +48,9 @@ export class Conductor extends EventEmitter {
     totalCost: number;
   }>();
 
-  constructor(claude: ClaudeAIService, config?: Partial<ConductorConfig>) {
+  constructor(codex: CodexAgentsService, config?: Partial<ConductorConfig>) {
     super();
-    this.claude = claude;
+    this.codex = codex;
     this.logger = new Logger('Conductor');
     this.config = {
       maxConcurrentStages: 2,
@@ -307,11 +307,11 @@ export class Conductor extends EventEmitter {
     
     const prompt = this.buildStagePrompt(context, stage, previousResults);
     
-    const response = await this.claude.sendMessage([
+    const response = await this.codex.sendMessage([
       { role: 'system', content: this.getSystemPromptForStage(stage) },
       { role: 'user', content: prompt }
     ], {
-      model: 'claude-3-5-sonnet-20241022',
+      model: this.getModelForStage(stage),
       maxTokens: this.getMaxTokensForStage(stage),
       temperature: 0.7
     });
@@ -485,6 +485,18 @@ Always respond with valid JSON in the exact format requested.`;
   }
 
   /**
+   * Choose Codex model per stage
+   */
+  private getModelForStage(stage: PipelineStage): string {
+    const stageModels: Partial<Record<PipelineStage, string>> = {
+      code_scaffold: 'gpt-4.1',
+      api_design: 'gpt-4.1'
+    };
+
+    return stageModels[stage] || 'gpt-4.1-mini';
+  }
+
+  /**
    * Get max tokens for each stage
    */
   private getMaxTokensForStage(stage: PipelineStage): number {
@@ -504,7 +516,7 @@ Always respond with valid JSON in the exact format requested.`;
   }
 
   /**
-   * Parse stage result from Claude response
+   * Parse stage result from Codex response
    */
   private parseStageResult(stage: PipelineStage, content: string): any {
     try {

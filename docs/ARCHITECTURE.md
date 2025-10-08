@@ -38,7 +38,7 @@ graph TB
     end
     
     subgraph "External Services"
-        LLM[LLM Providers<br/>OpenAI/Claude/Local]
+        LLM[LLM Providers<br/>OpenAI/Codex Agents/Local]
         Search[Search APIs<br/>Google/Bing]
         CodeGen[Code Analysis<br/>GitHub/GitLab]
         Monitor[Monitoring<br/>Datadog/Prometheus]
@@ -602,7 +602,7 @@ backend:
 ai_ml:
   llm_providers:
     - OpenAI GPT-4
-    - Anthropic Claude
+    - Codex Agents SDK (OpenAI)
     - Local Models (Ollama)
   
   frameworks:
