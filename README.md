@@ -227,13 +227,17 @@ Coverage:    100% on critical modules
 ### **Environment Variables**
 
 ```bash
-# Frontend Configuration
-NEXT_PUBLIC_API_BASE=          # Backend API URL for live mode
-NEXT_PUBLIC_USE_LIVE=false     # Default to simulated mode
+# Required for live agent runs
+OPENAI_API_KEY=your_openai_api_key_here
+NEXT_PUBLIC_USE_LIVE=false           # Toggle to true when using the backend
+NEXT_PUBLIC_API_BASE=                # Backend API base URL when live
+
+# Optional lead capture (e.g. Formspree, Airtable, Zapier webhook)
+NEXT_PUBLIC_LEAD_CAPTURE_URL=https://formspree.io/f/mgeglbpz  # Default Formspree endpoint (replace with your own)
 
 # Build-time Variables  
-APP_NAME="Launchloom"          # Application name
-APP_VERSION=                   # Auto-set from package.json
+APP_NAME="Launchloom"                # Application name
+APP_VERSION=                         # Auto-set from package.json
 ```
 
 ### **Package Scripts**

@@ -35,6 +35,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { LeadCaptureForm } from '@/components/lead-capture-form'
 
 // Zip utility for downloadable repo export (ESM/CDN-safe)
 import JSZip from 'jszip'
@@ -794,7 +795,23 @@ export default function LaunchloomApp() {
           </Card>
         </section>
 
-        <footer className="py-10 text-center text-xs text-slate-500">© {new Date().getFullYear()} Idea‑to‑Startup Studio — Preview build</footer>
+        {/* Lead capture */}
+        <section className="mt-12 grid gap-6 md:grid-cols-[2fr,3fr]">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-slate-900">Tell us about your idea</h2>
+            <p className="text-slate-600 text-[15px] leading-7">
+              We run a limited number of concierge engagements each month. Share a little context and the Launchloom crew will follow up within one business day.
+            </p>
+            <ul className="space-y-2 text-sm text-slate-600">
+              <li>• NDA-friendly—happy to execute before the deep dive.</li>
+              <li>• Ideal for founders, venture studios, and innovation teams.</li>
+              <li>• Want self-serve tooling? We’ll notify you as Launchloom Studio opens.</li>
+            </ul>
+          </div>
+          <LeadCaptureForm />
+        </section>
+
+        <footer className="py-10 text-center text-xs text-slate-500">© {new Date().getFullYear()} Launchloom — Preview build</footer>
       </main>
 
       {/* Deploy Guide Modal */}
