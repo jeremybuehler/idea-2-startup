@@ -464,7 +464,7 @@ jobs:
 
 ---
 
-**Maintainer**: I2S Security Team  
+**Maintainer**: Launchloom Security Team  
 **Security Contact**: security@i2s.studio  
 **Emergency**: security-emergency@i2s.studio  
 **Documentation**: Updated December 2024

@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-The I2S multi-agent system relies on a sophisticated communication infrastructure that enables seamless coordination between Pipeline Agents, Core Agents, and Deployment Agents through standardized message formats, event-driven architecture, and reliable delivery mechanisms.
+The Launchloom multi-agent system relies on a sophisticated communication infrastructure that enables seamless coordination between Pipeline Agents, Core Agents, and Deployment Agents through standardized message formats, event-driven architecture, and reliable delivery mechanisms.
 
 ## 🏗️ Communication Architecture
 
@@ -672,6 +672,6 @@ class MessageTestHarness {
 
 ---
 
-**Maintainer**: I2S Platform Team  
+**Maintainer**: Launchloom Platform Team  
 **Contact**: platform@i2s.studio  
 **Documentation**: Updated December 2024

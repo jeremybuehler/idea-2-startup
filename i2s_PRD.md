@@ -1,6 +1,6 @@
 Product Requirements Document (PRD)
 
-Product: Idea-to-Startup Studio (I2S)
+Product: Launchloom
 
 Version: 0.1 (Preview Build)
 Date: 2025-09-03
@@ -10,7 +10,7 @@ Author: Product Team
 
 1. Purpose & Vision
 
-The Idea-to-Startup Studio (I2S) is an interactive platform that allows a user to quickly transform raw ideas into structured startup scaffolds. By typing or speaking an idea, users receive immediate outputs: PRDs, wireframes, code scaffolds, and an agent runbook. The vision is to compress the idea-to-prototype cycle into minutes, empowering entrepreneurs, product managers, and innovators to validate and launch faster.
+The Launchloom platform is an interactive system that allows a user to quickly transform raw ideas into structured startup scaffolds. By typing or speaking an idea, users receive immediate outputs: PRDs, wireframes, code scaffolds, and an agent runbook. The vision is to compress the idea-to-prototype cycle into minutes, empowering entrepreneurs, product managers, and innovators to validate and launch faster.
 
 2. Goals & Objectives
 	•	Primary Goal: Reduce friction from concept to working prototype.

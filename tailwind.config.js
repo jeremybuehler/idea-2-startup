@@ -51,7 +51,7 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Enhanced I2S Studio color palette
+        // Enhanced Launchloom color palette
         gradient: {
           start: "hsl(var(--gradient-start))",
           end: "hsl(var(--gradient-end))",

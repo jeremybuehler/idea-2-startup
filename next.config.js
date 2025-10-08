@@ -7,7 +7,7 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   env: {
-    APP_NAME: 'I2S Studio',
+    APP_NAME: 'Launchloom',
     APP_VERSION: process.env.npm_package_version,
   },
 }

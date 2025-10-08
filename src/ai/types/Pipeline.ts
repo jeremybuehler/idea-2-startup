@@ -1,4 +1,4 @@
-// Core pipeline types for I2S Agent System
+// Core pipeline types for Launchloom agent system
 
 export type PipelineStage = 
   | 'normalize'

@@ -1,5 +1,5 @@
 /**
- * Core business logic utilities for Idea-to-Startup Studio
+ * Core business logic utilities for Launchloom
  * Extracted from monolithic component for better separation of concerns
  */
 

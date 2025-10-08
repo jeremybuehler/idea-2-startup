@@ -7,7 +7,7 @@
 
 ## 📋 Overview
 
-The Conductor Agent serves as the master orchestrator of the I2S ecosystem, managing workflow execution, resource allocation, budget control, and quality gates across all pipeline and deployment agents.
+The Conductor Agent serves as the master orchestrator of the Launchloom ecosystem, managing workflow execution, resource allocation, budget control, and quality gates across all pipeline and deployment agents.
 
 ## 🎯 Primary Responsibilities
 
@@ -353,6 +353,6 @@ expect(execution.resources.tokensUsed).toBeLessThan(100000);
 
 ---
 
-**Maintainer**: I2S Core Team  
+**Maintainer**: Launchloom Core Team  
 **On-Call**: conductor-oncall@i2s.studio  
 **Documentation**: Updated December 2024

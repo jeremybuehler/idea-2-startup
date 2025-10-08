@@ -37,7 +37,7 @@ interface PricingEntry {
 }
 
 const DEFAULT_MODEL = 'gpt-4.1-mini'
-const DEFAULT_SYSTEM_PROMPT = 'You are a Codex Agents stage orchestrator. Respond with tightly structured JSON that satisfies the caller\'s request.'
+const DEFAULT_SYSTEM_PROMPT = 'You are a Launchloom Agents stage orchestrator. Respond with tightly structured JSON that satisfies the caller\'s request.'
 
 const PRICING: Record<string, PricingEntry> = {
   'gpt-4.1-mini': { input: 0.0003, output: 0.0006 },
@@ -45,7 +45,7 @@ const PRICING: Record<string, PricingEntry> = {
   'o4-mini': { input: 0.0008, output: 0.0016 }
 }
 
-export class CodexAgentsService {
+export class LaunchloomAgentsService {
   private cache: AIResponseCache
   private costTracker: CostTracker
   private logger: Logger
@@ -55,7 +55,7 @@ export class CodexAgentsService {
   constructor(apiKey: string) {
     this.cache = new AIResponseCache()
     this.costTracker = new CostTracker()
-    this.logger = new Logger('CodexAgentsService')
+    this.logger = new Logger('LaunchloomAgentsService')
     this.defaultOptions = {
       model: DEFAULT_MODEL,
       maxTokens: 4000,
@@ -79,7 +79,7 @@ export class CodexAgentsService {
     if (config.useCache) {
       const cached = await this.cache.get(messages, config)
       if (cached) {
-        this.logger.info('Cache hit for Codex agent request')
+        this.logger.info('Cache hit for Launchloom agent request')
         return {
           ...cached,
           cached: true,
@@ -92,7 +92,7 @@ export class CodexAgentsService {
     const userPrompt = this.buildUserPrompt(messages)
 
     const agent = new Agent({
-      name: 'Codex Stage Agent',
+      name: 'Launchloom Stage Agent',
       instructions: systemPrompt || DEFAULT_SYSTEM_PROMPT,
       model: config.model,
       modelSettings: {
@@ -156,7 +156,7 @@ export class CodexAgentsService {
         attempt += 1
 
         if (attempt > config.retries) {
-          this.logger.error('Codex agent request failed', error)
+          this.logger.error('Launchloom agent request failed', error)
           throw error
         }
 
@@ -165,8 +165,8 @@ export class CodexAgentsService {
       }
     }
 
-    this.logger.error('Codex agent request failed without throwing error explicitly')
-    throw lastError instanceof Error ? lastError : new Error('Codex agent request failed')
+    this.logger.error('Launchloom agent request failed without throwing error explicitly')
+    throw lastError instanceof Error ? lastError : new Error('Launchloom agent request failed')
   }
 
   async *streamMessage(messages: AgentMessage[], options: AgentRequestOptions = {}): AsyncGenerator<string, AgentResponse, unknown> {
@@ -245,7 +245,7 @@ export class CodexAgentsService {
     try {
       return JSON.stringify(finalOutput, null, 2)
     } catch (error) {
-      this.logger.warn('Unable to serialize Codex agent output', error)
+      this.logger.warn('Unable to serialize Launchloom agent output', error)
       return String(finalOutput)
     }
   }

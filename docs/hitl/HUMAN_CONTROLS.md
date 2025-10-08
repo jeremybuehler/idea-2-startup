@@ -7,7 +7,7 @@
 
 ## 📋 Overview
 
-The Human-in-the-Loop (HITL) system provides critical oversight and control mechanisms for the I2S multi-agent platform, ensuring human supervision over automated processes, maintaining quality standards, and providing intervention capabilities when needed.
+The Human-in-the-Loop (HITL) system provides critical oversight and control mechanisms for the Launchloom multi-agent platform, ensuring human supervision over automated processes, maintaining quality standards, and providing intervention capabilities when needed.
 
 ## 🎯 HITL Philosophy
 
@@ -816,7 +816,7 @@ const HITLMetricsDashboard: React.FC = () => {
 
 ---
 
-**Owner**: I2S HITL Team  
+**Owner**: Launchloom HITL Team  
 **Contact**: hitl@i2s.studio  
 **Emergency**: emergency@i2s.studio  
 **Documentation**: Updated December 2024

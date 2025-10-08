@@ -1,6 +1,6 @@
-# I2S Studio Backend
+# Launchloom Backend
 
-Production-ready FastAPI backend for Idea-to-Startup Studio.
+Production-ready FastAPI backend for Launchloom.
 
 ## Architecture Overview
 

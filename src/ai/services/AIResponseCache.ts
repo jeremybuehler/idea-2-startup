@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { AgentMessage, AgentRequestOptions, AgentResponse } from './CodexAgentsService'
+import { AgentMessage, AgentRequestOptions, AgentResponse } from './LaunchloomAgentsService'
 import { Logger } from '../utils/Logger'
 
 interface CacheEntry {

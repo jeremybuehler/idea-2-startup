@@ -255,10 +255,10 @@ function scoreIdea(idea: string) {
 }
 
 // Main Enhanced Component
-export default function EnhancedI2SApp() {
+export default function EnhancedLaunchloomApp() {
   // State management
   const [idea, setIdea] = useState("")
-  const [title, setTitle] = useState("Idea‑to‑Startup Studio")
+  const [title, setTitle] = useState("Launchloom")
   const [oneLiner, setOneLiner] = useState("Speak an idea → get PRD, mockups, code scaffold, and agent runbook.")
   const [running, setRunning] = useState(false)
   const [dossier, setDossier] = useState<any | null>(null)
@@ -425,7 +425,7 @@ export default function EnhancedI2SApp() {
               </FloatingElement>
               <div>
                 <h1 className="font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  Idea‑to‑Startup Studio
+                  Launchloom
                 </h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">
                   Transform ideas into startups
@@ -693,7 +693,7 @@ export default function EnhancedI2SApp() {
                       className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg"
                     >
                       {useLive && apiBase 
-                        ? "Orchestrating Codex agents..." 
+                        ? "Orchestrating agents..." 
                         : "Processing: capture → research → design → scaffold..."
                       }
                     </motion.div>
@@ -914,7 +914,7 @@ export default function EnhancedI2SApp() {
       <footer className="mt-16 border-t border-border/40 bg-muted/20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Idea‑to‑Startup Studio — Enhanced Experience</p>
+            <p>© {new Date().getFullYear()} Launchloom — Enhanced Experience</p>
             <p className="mt-1">Built with modern React, accessibility in mind, and delightful interactions</p>
           </div>
         </div>

@@ -36,6 +36,6 @@ export interface PipelineStage {
 declare global {
   // eslint-disable-next-line no-unused-vars
   interface Window {
-    __I2S_TESTED__?: boolean;
+    __LAUNCHLOOM_TESTED__?: boolean;
   }
 }

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# WARP Setup Script for I2S Studio
+# WARP Setup Script for Launchloom
 # This script helps WARP AI assistant quickly set up the development environment
 
 set -e
 
-echo "🚀 Setting up I2S Studio for WARP AI Assistant..."
+echo "🚀 Setting up Launchloom for WARP AI Assistant..."
 
 # Check Node.js version
 if ! command -v node &> /dev/null; then

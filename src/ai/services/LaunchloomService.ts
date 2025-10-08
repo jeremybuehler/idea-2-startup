@@ -1,24 +1,24 @@
 import { EventEmitter } from 'events';
 import { TemplateGenerator, scoreIdea, toSlug } from '@/lib/business-logic';
 import { Dossier } from '@/types';
-import { CodexAgentsService } from './CodexAgentsService';
+import { LaunchloomAgentsService } from './LaunchloomAgentsService';
 import { Conductor } from '../agents/Conductor';
 import { IdeaContext, PipelineProgress } from '../types/Pipeline';
 
-interface I2SConfig {
+interface LaunchloomServiceConfig {
   apiKey: string;
   enableLiveMode: boolean;
   defaultQualityThreshold: number;
   defaultBudgetLimit: number;
 }
 
-export class I2SService extends EventEmitter {
-  private codex?: CodexAgentsService;
+export class LaunchloomService extends EventEmitter {
+  private agents?: LaunchloomAgentsService;
   private conductor?: Conductor;
-  private config: I2SConfig;
+  private config: LaunchloomServiceConfig;
   private activePipelines = new Map<string, PipelineExecution>();
 
-  constructor(config: I2SConfig) {
+  constructor(config: LaunchloomServiceConfig) {
     super();
     this.config = config;
     
@@ -28,13 +28,13 @@ export class I2SService extends EventEmitter {
   }
 
   private initializeLiveServices(apiKey: string): void {
-    const codex = new CodexAgentsService(apiKey);
-    const conductor = new Conductor(codex, {
+    const launchloomAgents = new LaunchloomAgentsService(apiKey);
+    const conductor = new Conductor(launchloomAgents, {
       qualityThreshold: this.config.defaultQualityThreshold,
       budgetLimit: this.config.defaultBudgetLimit
     });
 
-    this.codex = codex;
+    this.agents = launchloomAgents;
     this.conductor = conductor;
 
     conductor.on('pipeline:completed', (data) => this.emit('pipeline:completed', data));
@@ -45,7 +45,7 @@ export class I2SService extends EventEmitter {
   }
 
   /**
-   * Process an idea through the I2S pipeline (replaces makeDossier)
+   * Process an idea through the Launchloom pipeline (replaces makeDossier)
    */
   async processIdea(
     ideaText: string,
@@ -63,9 +63,9 @@ export class I2SService extends EventEmitter {
     
     // Use live mode if enabled and requested
     const useLive = this.config.enableLiveMode && (options.useLive !== false);
-    
+
     if (useLive && this.conductor) {
-      return await this.processWithCodex(ideaText, options);
+      return await this.processWithAgents(ideaText, options);
     } else {
       // Fallback to simulated mode (existing functionality)
       return await this.processSimulated(ideaText, options);
@@ -73,9 +73,9 @@ export class I2SService extends EventEmitter {
   }
 
   /**
-   * Process idea using Codex-powered agents
+   * Process idea using Launchloom-powered agents
    */
-  private async processWithCodex(
+  private async processWithAgents(
     ideaText: string,
     options: any
   ): Promise<Dossier> {
@@ -177,7 +177,7 @@ export class I2SService extends EventEmitter {
       return await this.processSimulated(ideaText, options);
     }
 
-    // Real streaming with Codex
+    // Real streaming with the live agent stack
     const context: IdeaContext = {
       ideaText,
       userId: options.userId,
@@ -275,10 +275,10 @@ export class I2SService extends EventEmitter {
     };
     error?: string;
   }> {
-    const codex = this.codex;
+    const agentService = this.agents;
     const conductor = this.conductor;
 
-    if (!this.config.enableLiveMode || !codex || !conductor) {
+    if (!this.config.enableLiveMode || !agentService || !conductor) {
       return {
         healthy: true,
         mode: 'simulated'
@@ -287,8 +287,8 @@ export class I2SService extends EventEmitter {
 
     try {
       const [health, stats] = await Promise.all([
-        codex.healthCheck(),
-        codex.getCostStats()
+        agentService.healthCheck(),
+        agentService.getCostStats()
       ]);
 
       return {
@@ -362,7 +362,7 @@ export class I2SService extends EventEmitter {
   /**
    * Update configuration
    */
-  updateConfig(config: Partial<I2SConfig>): void {
+  updateConfig(config: Partial<LaunchloomServiceConfig>): void {
     this.config = { ...this.config, ...config };
     
     // Reinitialize services if needed
@@ -370,7 +370,7 @@ export class I2SService extends EventEmitter {
       if (this.config.enableLiveMode && this.config.apiKey) {
         this.initializeLiveServices(this.config.apiKey);
       } else {
-        this.codex = undefined;
+        this.agents = undefined;
         this.conductor = undefined;
       }
     }
@@ -385,16 +385,16 @@ interface PipelineExecution {
 }
 
 // Singleton instance for use throughout the app
-let i2sServiceInstance: I2SService | null = null;
+let launchloomServiceInstance: LaunchloomService | null = null;
 
-export function createI2SService(config: I2SConfig): I2SService {
-  i2sServiceInstance = new I2SService(config);
-  return i2sServiceInstance;
+export function createLaunchloomService(config: LaunchloomServiceConfig): LaunchloomService {
+  launchloomServiceInstance = new LaunchloomService(config);
+  return launchloomServiceInstance;
 }
 
-export function getI2SService(): I2SService {
-  if (!i2sServiceInstance) {
-    throw new Error('I2S Service not initialized. Call createI2SService first.');
+export function getLaunchloomService(): LaunchloomService {
+  if (!launchloomServiceInstance) {
+    throw new Error('Launchloom service not initialized. Call createLaunchloomService first.');
   }
-  return i2sServiceInstance;
+  return launchloomServiceInstance;
 }

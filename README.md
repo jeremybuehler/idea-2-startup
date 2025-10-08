@@ -1,4 +1,4 @@
-# 🚀 Idea-to-Startup Studio (I2S)
+# 🚀 Launchloom
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4+-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2+-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -7,19 +7,29 @@
 [![Security](https://img.shields.io/badge/Security-Hardened-red?style=flat&logo=security&logoColor=white)](#-security)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Transform raw startup ideas into structured deliverables including PRDs, wireframes, code scaffolds, and agent runbooks.**
+> **Concierge AI that weaves research, compliance, and code into a launch-ready agent package.**
 
 Transform your startup concepts from napkin sketches to production-ready platforms with AI-powered validation, comprehensive documentation, and automated scaffolding.
 
-## ✨ **Used by Entrepreneurs Who Value**
+## 🧵 Concierge Deliverables
+
+Launchloom hands you a premium dossier in a single run:
+
+- **Executive PRD** with market analysis, scoring, and structured scope
+- **Agent runbook** detailing every workflow hand-off, guardrail, and tool
+- **Repo scaffold** (Next.js + FastAPI) plus ops guides and environment templates
+- **Compliance snapshot** with license hygiene, risk posture, and budget trace
+- **Founder debrief** so teams know exactly how to ship the first slice
+
+## ✨ **Used by Innovators Who Value**
 
 **Speed** • **Structure** • **Security** • **Scalability** • **Professional Documentation**
 
 ---
 
-## 🎯 **What is I2S Studio?**
+## 🎯 **What is Launchloom?**
 
-Idea-to-Startup Studio is a **Next.js 14 application** that bridges the gap between raw startup ideas and structured, actionable deliverables. It operates in dual modes—simulated for demos and live API for production—transforming abstract concepts into concrete business assets.
+Launchloom is a **Next.js 14 concierge platform** that bridges the gap between raw startup ideas and structured, actionable deliverables. It operates in dual modes—simulated for demos and live API for production—transforming abstract concepts into concrete business assets.
 
 ### **Core Value Proposition**
 
@@ -75,7 +85,7 @@ This runs a complete validation pipeline including type-checking, linting, and t
 idea-2-startup/
 ├── app/                    # Next.js App Router
 │   ├── layout.tsx         # Root layout with metadata
-│   ├── page.tsx           # Main I2S application
+│   ├── page.tsx           # Main Launchloom application
 │   └── globals.css        # Global styles & CSS variables
 ├── lib/                   # Core utilities & business logic
 │   ├── security.ts        # Input sanitization & validation
@@ -222,7 +232,7 @@ NEXT_PUBLIC_API_BASE=          # Backend API URL for live mode
 NEXT_PUBLIC_USE_LIVE=false     # Default to simulated mode
 
 # Build-time Variables  
-APP_NAME="I2S Studio"          # Application name
+APP_NAME="Launchloom"          # Application name
 APP_VERSION=                   # Auto-set from package.json
 ```
 
@@ -249,7 +259,7 @@ APP_VERSION=                   # Auto-set from package.json
 1. **Push to GitHub**:
    ```bash
    git add -A
-   git commit -m "Deploy I2S Studio"
+   git commit -m "Deploy Launchloom"
    git push origin main
    ```
 

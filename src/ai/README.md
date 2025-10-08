@@ -1,6 +1,6 @@
-# 🤖 Codex Agents-Powered I2S Agent System
+# 🤖 Launchloom Agent System
 
-This directory contains the Codex Agents-powered multi-agent system for transforming startup ideas into comprehensive deliverables. The system features intelligent caching, cost optimization, and real-time processing capabilities.
+This directory contains the Launchloom agent orchestration stack for transforming startup ideas into comprehensive deliverables. The system features intelligent caching, cost optimization, and real-time processing capabilities.
 
 ## 🏗️ Architecture Overview
 
@@ -9,10 +9,10 @@ src/ai/
 ├── agents/
 │   └── Conductor.ts           # Main orchestration agent
 ├── services/
-│   ├── CodexAgentsService.ts     # Codex Agents API integration
+│   ├── LaunchloomAgentsService.ts # OpenAI Agents SDK integration
 │   ├── AIResponseCache.ts     # Semantic caching system
 │   ├── CostTracker.ts         # Cost monitoring and budgets
-│   └── I2SService.ts          # Frontend integration service
+│   └── LaunchloomService.ts  # Frontend integration service
 ├── types/
 │   └── Pipeline.ts            # TypeScript definitions
 ├── utils/
@@ -37,10 +37,10 @@ Copy and configure your environment variables:
 cp .env.example .env.local
 ```
 
-Edit `.env.local` and add your Codex Agents API key:
+Edit `.env.local` and add your OpenAI API key (Launchloom uses the OpenAI Agents SDK under the hood):
 
 ```bash
-CODEX_API_KEY=your_codex_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 NEXT_PUBLIC_USE_LIVE=true
 QUALITY_THRESHOLD=0.7
 BUDGET_LIMIT=10.0
@@ -49,13 +49,13 @@ BUDGET_LIMIT=10.0
 ### 3. Initialize the Service
 
 ```typescript
-import { initializeI2S } from '../ai/config';
+import { initializeLaunchloom } from '../ai/config';
 
-// Initialize the I2S service
-const i2sService = initializeI2S();
+// Initialize the Launchloom service
+const launchloomService = initializeLaunchloom();
 
 // Process an idea
-const dossier = await i2sService.processIdea(
+const dossier = await launchloomService.processIdea(
   "A mobile app that uses AI to help people find the perfect coffee shop",
   {
     industry: "Food & Beverage",
@@ -72,7 +72,7 @@ console.log('Generated dossier:', dossier);
 
 ```typescript
 // Stream processing progress
-for await (const progress of i2sService.streamPipelineProgress(ideaText)) {
+for await (const progress of launchloomService.streamPipelineProgress(ideaText)) {
   console.log(`Progress: ${progress.percentage}%`);
   console.log(`Stage: ${progress.currentStage}/${progress.totalStages}`);
 }
@@ -83,13 +83,13 @@ for await (const progress of i2sService.streamPipelineProgress(ideaText)) {
 ### ✨ Core Capabilities
 
 - **9-Stage Pipeline**: Normalize → Research → Feasibility → Market Analysis → Risk Assessment → UX Design → Code Scaffold → API Design → Export
-- **Codex Agents SDK (gpt-4.1 / gpt-4.1-mini)**: Latest Codex Agents model for high-quality output
+- **Launchloom agent SDK (gpt-4.1 / gpt-4.1-mini)**: Latest Launchloom agent model for high-quality output
 - **Intelligent Caching**: 60-80% cost reduction through semantic similarity matching
 - **Real-time Progress**: WebSocket-based progress tracking
 - **Cost Management**: Budget limits and cost tracking per pipeline
 - **Quality Assessment**: AI-powered quality scoring with thresholds
 - **Error Handling**: Retry logic with exponential backoff
-- **Dual Mode**: Live Codex Agents workflow or simulated mode fallback
+- **Dual Mode**: Live Launchloom agent workflow or simulated mode fallback
 
 ### 🛡️ Enterprise Features
 
@@ -102,7 +102,7 @@ for await (const progress of i2sService.streamPipelineProgress(ideaText)) {
 
 ## 📊 Pipeline Stages
 
-Each stage is handled by specialized Codex agent prompts:
+Each stage is handled by specialized Launchloom agent prompts:
 
 1. **Normalize**: Clean and structure the raw idea
 2. **Research**: Market research and competitive analysis  
@@ -120,7 +120,7 @@ The system includes comprehensive cost tracking and optimization:
 
 ```typescript
 // Get cost statistics
-const stats = await i2sService.getServiceHealth();
+const stats = await launchloomService.getServiceHealth();
 console.log(`Total cost: $${stats.stats?.totalCost}`);
 console.log(`Avg cost per request: $${stats.stats?.averageCostPerRequest?.toFixed(4)}`);
 
@@ -144,7 +144,7 @@ costTracker.setBudgetAlert(50.0, 500.0, (usage) => {
 
 ```bash
 # Required for live mode
-CODEX_API_KEY=your_codex_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 NEXT_PUBLIC_USE_LIVE=true
 
 # Optional configuration
@@ -156,10 +156,10 @@ LOG_LEVEL=info                 # debug|info|warn|error
 ### Service Configuration
 
 ```typescript
-import { createI2SService } from './services/I2SService';
+import { createLaunchloomService } from './services/LaunchloomService';
 
-const service = createI2SService({
-  apiKey: process.env.CODEX_API_KEY,
+const service = createLaunchloomService({
+  apiKey: process.env.OPENAI_API_KEY,
   enableLiveMode: true,
   defaultQualityThreshold: 0.7,
   defaultBudgetLimit: 10.0
@@ -171,7 +171,7 @@ const service = createI2SService({
 ### Health Checks
 
 ```typescript
-const health = await i2sService.getServiceHealth();
+const health = await launchloomService.getServiceHealth();
 console.log('Service status:', {
   healthy: health.healthy,
   mode: health.mode,
@@ -185,7 +185,7 @@ console.log('Service status:', {
 
 ```typescript
 // Real-time cost monitoring
-const costStats = await i2sService.getServiceHealth();
+const costStats = await launchloomService.getServiceHealth();
 console.log('Cost statistics:', {
   totalCost: costStats.stats?.totalCost,
   todayCost: costStats.stats?.todayCost,
@@ -234,7 +234,7 @@ const result = await conductor.executeStageWithRetry(
 - QUALITY_THRESHOLD_NOT_MET: Output quality too low
 - BUDGET_LIMIT_EXCEEDED: Cost limit reached
 - TIMEOUT: Processing took too long
-- INVALID_RESPONSE: Malformed Codex agent response
+- INVALID_RESPONSE: Malformed Launchloom agent response
 ```
 
 ## 🔧 Development
@@ -272,8 +272,8 @@ npm run validate
 npm run dev
 
 # The service will automatically:
-# - Use simulated mode if no Codex Agents API key
-# - Enable live mode if CODEX_API_KEY is set
+# - Use simulated mode if no Launchloom agent API key
+# - Enable live mode if OPENAI_API_KEY is set
 # - Show detailed logs in development
 ```
 
@@ -284,7 +284,7 @@ npm run dev
 ```bash
 # Production environment variables
 NODE_ENV=production
-CODEX_API_KEY=prod_api_key_here
+OPENAI_API_KEY=prod_api_key_here
 NEXT_PUBLIC_USE_LIVE=true
 QUALITY_THRESHOLD=0.8
 BUDGET_LIMIT=25.0
@@ -331,9 +331,9 @@ service.on('stage:completed', (data) => console.log('Stage done:', data));
 
 ## 🔐 Security & Privacy
 
-- **API Key Security**: Store Codex Agents API keys in secure environment variables
+- **API Key Security**: Store Launchloom agent API keys in secure environment variables
 - **Cost Controls**: Budget limits prevent runaway costs
-- **Data Privacy**: No user data stored in Codex agent responses
+- **Data Privacy**: No user data stored in Launchloom agent responses
 - **Audit Logs**: Comprehensive logging for compliance
 - **Rate Limiting**: Built-in rate limiting and retry logic
 
@@ -344,14 +344,14 @@ service.on('stage:completed', (data) => console.log('Stage done:', data));
 **"Service not initialized" Error:**
 ```typescript
 // Make sure to initialize before use
-import { initializeI2S } from '../ai/config';
-const service = initializeI2S();
+import { initializeLaunchloom } from '../ai/config';
+const service = initializeLaunchloom();
 ```
 
 **High API Costs:**
 ```typescript
 // Enable caching and set budget limits
-const service = createI2SService({
+const service = createLaunchloomService({
   enableCaching: true,
   budgetLimit: 5.0,  // Lower budget
   qualityThreshold: 0.6  // Lower quality for cost savings
@@ -361,7 +361,7 @@ const service = createI2SService({
 **Quality Too Low:**
 ```typescript
 // Increase quality threshold and retry attempts
-const service = createI2SService({
+const service = createLaunchloomService({
   qualityThreshold: 0.8,
   retryAttempts: 3
 });
@@ -375,10 +375,10 @@ const service = createI2SService({
 
 ## 🎯 Next Steps
 
-1. **Set up your Codex Agents API key** in `.env.local`
+1. **Set up your Launchloom agent API key** in `.env.local`
 2. **Run a test pipeline** with a sample idea
 3. **Monitor costs and performance** in development
 4. **Configure quality thresholds** for your use case
 5. **Deploy to production** with appropriate settings
 
-The Codex Agents-powered I2S system is now ready to transform startup ideas into comprehensive, production-ready deliverables! 🚀
+The Launchloom agent-powered Launchloom system is now ready to transform startup ideas into comprehensive, production-ready deliverables! 🚀

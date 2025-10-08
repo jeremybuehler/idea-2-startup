@@ -12,9 +12,9 @@ class Settings(BaseSettings):
     
     # API Configuration
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "I2S Studio API"
+    PROJECT_NAME: str = "Launchloom API"
     VERSION: str = "0.1.0"
-    DESCRIPTION: str = "Idea-to-Startup Studio Backend API"
+    DESCRIPTION: str = "Launchloom Backend API"
     
     # Server Configuration
     HOST: str = "0.0.0.0"

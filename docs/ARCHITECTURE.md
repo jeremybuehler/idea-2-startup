@@ -1,4 +1,4 @@
-# 🏗️ I2S System Architecture
+# 🏗️ Launchloom System Architecture
 
 **Version**: 2.0.0  
 **Last Updated**: December 2024  
@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-The Idea-to-Startup Studio (I2S) is architected as a sophisticated multi-agent system that transforms raw startup ideas into production-ready deliverables through coordinated agent collaboration, secure processing pipelines, and scalable infrastructure.
+The Launchloom platform is architected as a sophisticated multi-agent system that transforms raw startup ideas into production-ready deliverables through coordinated agent collaboration, secure processing pipelines, and scalable infrastructure.
 
 ## 🌐 High-Level Architecture
 
@@ -38,7 +38,7 @@ graph TB
     end
     
     subgraph "External Services"
-        LLM[LLM Providers<br/>OpenAI/Codex Agents/Local]
+        LLM[LLM Providers<br/>OpenAI Agents/Local]
         Search[Search APIs<br/>Google/Bing]
         CodeGen[Code Analysis<br/>GitHub/GitLab]
         Monitor[Monitoring<br/>Datadog/Prometheus]
@@ -602,7 +602,7 @@ backend:
 ai_ml:
   llm_providers:
     - OpenAI GPT-4
-    - Codex Agents SDK (OpenAI)
+    - OpenAI Agents SDK
     - Local Models (Ollama)
   
   frameworks:
@@ -636,7 +636,7 @@ docker-compose -f docker/dev-stack.yml up -d
 ### CI/CD Pipeline
 ```yaml
 # .github/workflows/deploy.yml
-name: Deploy I2S Platform
+name: Deploy Launchloom Platform
 on:
   push:
     branches: [main, develop]

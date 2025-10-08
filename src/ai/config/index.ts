@@ -1,9 +1,9 @@
-import { createI2SService, I2SService } from '../services/I2SService';
+import { createLaunchloomService, LaunchloomService } from '../services/LaunchloomService';
 
 // Environment configuration
 const config = {
-  // Codex Agents / OpenAI API configuration
-  apiKey: process.env.CODEX_API_KEY || process.env.OPENAI_API_KEY || '',
+  // Launchloom agent / OpenAI API configuration
+  apiKey: process.env.LAUNCHLOOM_API_KEY || process.env.OPENAI_API_KEY || '',
   
   // Feature flags
   enableLiveMode: process.env.NEXT_PUBLIC_USE_LIVE === 'true' || false,
@@ -20,7 +20,7 @@ const config = {
 // Validate configuration
 function validateConfig() {
   if (config.enableLiveMode && !config.apiKey) {
-    console.warn('Live mode enabled but no Codex Agents API key found. Falling back to simulated mode.');
+    console.warn('Live mode enabled but no Launchloom agent API key found. Falling back to simulated mode.');
     config.enableLiveMode = false;
   }
   
@@ -35,14 +35,14 @@ function validateConfig() {
   }
 }
 
-// Initialize I2S service
-let i2sService: I2SService;
+// Initialize Launchloom service
+let launchloomService: LaunchloomService;
 
-export function initializeI2S(): I2SService {
+export function initializeLaunchloom(): LaunchloomService {
   validateConfig();
   
-  if (!i2sService) {
-    i2sService = createI2SService({
+  if (!launchloomService) {
+    launchloomService = createLaunchloomService({
       apiKey: config.apiKey,
       enableLiveMode: config.enableLiveMode,
       defaultQualityThreshold: config.defaultQualityThreshold,
@@ -50,30 +50,30 @@ export function initializeI2S(): I2SService {
     });
     
     // Set up global event handlers
-    i2sService.on('pipeline:completed', (data) => {
+    launchloomService.on('pipeline:completed', (data) => {
       console.log('Pipeline completed:', data.executionId);
     });
     
-    i2sService.on('pipeline:failed', (data) => {
+    launchloomService.on('pipeline:failed', (data) => {
       console.error('Pipeline failed:', data.executionId, data.error);
     });
     
     // Log service initialization
-    console.log('I2S Service initialized:', {
+    console.log('Launchloom service initialized:', {
       mode: config.enableLiveMode ? 'live' : 'simulated',
       qualityThreshold: config.defaultQualityThreshold,
       budgetLimit: config.defaultBudgetLimit
     });
   }
   
-  return i2sService;
+  return launchloomService;
 }
 
-export function getI2S(): I2SService {
-  if (!i2sService) {
-    return initializeI2S();
+export function getLaunchloom(): LaunchloomService {
+  if (!launchloomService) {
+    return initializeLaunchloom();
   }
-  return i2sService;
+  return launchloomService;
 }
 
 export { config };

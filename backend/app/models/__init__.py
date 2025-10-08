@@ -1,4 +1,4 @@
-"""SQLAlchemy models for I2S Studio."""
+"""SQLAlchemy models for Launchloom."""
 
 from app.models.audit import AuditLog
 from app.models.dossier import Dossier

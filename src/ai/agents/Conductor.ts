@@ -1,4 +1,4 @@
-import { CodexAgentsService } from '../services/CodexAgentsService';
+import { LaunchloomAgentsService } from '../services/LaunchloomAgentsService';
 import { Logger } from '../utils/Logger';
 import { IdeaContext, PipelineStage, PipelineResult, PipelineProgress } from '../types/Pipeline';
 import { EventEmitter } from 'events';
@@ -24,7 +24,7 @@ interface StageExecution {
 }
 
 export class Conductor extends EventEmitter {
-  private codex: CodexAgentsService;
+  private agentService: LaunchloomAgentsService;
   private logger: Logger;
   private config: ConductorConfig;
   
@@ -48,9 +48,9 @@ export class Conductor extends EventEmitter {
     totalCost: number;
   }>();
 
-  constructor(codex: CodexAgentsService, config?: Partial<ConductorConfig>) {
+  constructor(agentService: LaunchloomAgentsService, config?: Partial<ConductorConfig>) {
     super();
-    this.codex = codex;
+    this.agentService = agentService;
     this.logger = new Logger('Conductor');
     this.config = {
       maxConcurrentStages: 2,
@@ -63,7 +63,7 @@ export class Conductor extends EventEmitter {
   }
 
   /**
-   * Execute the full I2S pipeline for an idea
+   * Execute the full Launchloom pipeline for an idea
    */
   async executePipeline(context: IdeaContext): Promise<PipelineResult> {
     const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -307,7 +307,7 @@ export class Conductor extends EventEmitter {
     
     const prompt = this.buildStagePrompt(context, stage, previousResults);
     
-    const response = await this.codex.sendMessage([
+    const response = await this.agentService.sendMessage([
       { role: 'system', content: this.getSystemPromptForStage(stage) },
       { role: 'user', content: prompt }
     ], {
@@ -458,7 +458,7 @@ Format as JSON with keys: summary, roadmap, runbook, nextSteps, metrics`
    * Get system prompt for each stage
    */
   private getSystemPromptForStage(stage: PipelineStage): string {
-    const basePrompt = `You are an expert startup advisor and technical architect working on the I2S (Idea-to-Startup) pipeline. Your role is to provide thorough, actionable analysis at each stage.
+    const basePrompt = `You are an expert startup advisor and technical architect working on the Launchloom pipeline. Your role is to provide thorough, actionable analysis at each stage.
 
 Key principles:
 - Be specific and actionable in all recommendations
@@ -485,7 +485,7 @@ Always respond with valid JSON in the exact format requested.`;
   }
 
   /**
-   * Choose Codex model per stage
+   * Choose model per stage
    */
   private getModelForStage(stage: PipelineStage): string {
     const stageModels: Partial<Record<PipelineStage, string>> = {
@@ -516,7 +516,7 @@ Always respond with valid JSON in the exact format requested.`;
   }
 
   /**
-   * Parse stage result from Codex response
+   * Parse stage result from agent response
    */
   private parseStageResult(stage: PipelineStage, content: string): any {
     try {

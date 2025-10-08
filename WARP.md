@@ -26,7 +26,7 @@ git log --oneline -5          # View recent commits
 
 ## Project Overview
 
-**Idea-to-Startup Studio (I2S)** is a Next.js 14 application that transforms raw startup ideas into structured deliverables including PRDs, wireframes, code scaffolds, and agent runbooks. It operates in two modes: a simulated mode for demonstrations and a live API mode for production use.
+**Launchloom** is a Next.js 14 application that weaves raw ideas into structured agent deliverables—PRDs, runbooks, code scaffolds, and compliance briefs. It operates in two modes: a simulated mode for fast demos and a live API mode for production-grade runs.
 
 ## Architecture
 
@@ -119,7 +119,7 @@ The application provides three export options:
 ## Development Patterns
 
 ### Component Architecture
-- Main component: `I2SApp` in `app/page.tsx`
+- Main component: `LaunchloomApp` in `app/page.tsx`
 - Uses React hooks for state management (useState, useMemo)
 - Leverages shadcn/ui for consistent component styling
 - Custom CSS classes defined in `globals.css` for pipeline stages
@@ -155,7 +155,7 @@ NEXT_PUBLIC_API_BASE=          # Backend API URL for live mode
 NEXT_PUBLIC_USE_LIVE=false     # Default to simulated mode
 
 # Build-time variables
-APP_NAME="I2S Studio"          # Application name
+APP_NAME="Launchloom"          # Application name
 APP_VERSION=                   # Automatically set from package.json
 ```
 

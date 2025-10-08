@@ -1,3 +1,3 @@
-"""I2S Studio Backend Application"""
+"""Launchloom Backend Application"""
 
 __version__ = "0.1.0"

@@ -1,4 +1,4 @@
-# 🤖 Idea-to-Startup Agent Documentation
+# 🤖 Launchloom Agent Documentation
 
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-The Idea-to-Startup Studio (I2S) operates as a sophisticated multi-agent system orchestrating the transformation of raw startup ideas into production-ready deliverables. This documentation covers all agents, subagents, and their interactions within the system.
+The Launchloom platform operates as a sophisticated multi-agent system orchestrating the transformation of raw startup ideas into production-ready deliverables. This documentation covers all agents, subagents, and their interactions within the system.
 
 ## 🏗️ Agent Architecture
 

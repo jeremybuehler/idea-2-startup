@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Rocket, Target, Zap, Shield } from "lucide-react";
 
 // Enhanced Components
-import EnhancedI2SApp from "@/components/enhanced-i2s-app";
+import EnhancedLaunchloomApp from "@/components/enhanced-i2s-app";
 import { AppProvider } from "@/contexts/app-context";
 import { Button } from "@/components/ui/button";
 
@@ -33,7 +33,7 @@ function FirstRunGuide({ onDismiss }: { onDismiss: () => void }) {
               </div>
               <div>
                 <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  Welcome to I2S Studio
+                  Welcome to Launchloom
                 </h2>
                 <p className="text-sm text-muted-foreground">Enhanced Experience</p>
               </div>
@@ -104,11 +104,11 @@ function FirstRunGuide({ onDismiss }: { onDismiss: () => void }) {
 }
 
 // Main App Wrapper with Context Provider
-export default function I2SApp() {
+export default function LaunchloomApp() {
   const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
-    const seen = localStorage.getItem("i2s_seen_guide_enhanced");
+    const seen = localStorage.getItem("launchloom_seen_guide_enhanced");
     if (!seen) {
       // Add slight delay for better UX
       setTimeout(() => setShowGuide(true), 1000);
@@ -116,14 +116,14 @@ export default function I2SApp() {
   }, []);
 
   function dismissGuide() {
-    localStorage.setItem("i2s_seen_guide_enhanced", "true");
+    localStorage.setItem("launchloom_seen_guide_enhanced", "true");
     setShowGuide(false);
   }
 
   return (
     <AppProvider>
       <div className="min-h-screen">
-        <EnhancedI2SApp />
+        <EnhancedLaunchloomApp />
         {showGuide && <FirstRunGuide onDismiss={dismissGuide} />}
       </div>
     </AppProvider>
@@ -133,9 +133,9 @@ export default function I2SApp() {
 // Enhanced self-tests for the new architecture
 (function runEnhancedSelfTests(){
   try {
-    console.assert(typeof EnhancedI2SApp === 'function', 'Enhanced I2S App component should exist');
+    console.assert(typeof EnhancedLaunchloomApp === 'function', 'Enhanced Launchloom App component should exist');
     console.assert(typeof AppProvider === 'function', 'App context provider should exist');
-    console.log("✨ Enhanced I2S Studio loaded successfully with:");
+    console.log("✨ Enhanced Launchloom loaded successfully with:");
     console.log("  • Modern React patterns with hooks and context");
     console.log("  • Smooth animations and micro-interactions");
     console.log("  • WCAG 2.1 AA accessibility compliance");

@@ -7,7 +7,7 @@
 
 ## 📋 Overview
 
-The Runbook Generation System creates dynamic, executable agent orchestration runbooks that define how agents coordinate, execute tasks, handle errors, and adapt to different scenarios in the I2S platform.
+The Runbook Generation System creates dynamic, executable agent orchestration runbooks that define how agents coordinate, execute tasks, handle errors, and adapt to different scenarios in the Launchloom platform.
 
 ## 🎯 Runbook Philosophy
 
@@ -292,7 +292,7 @@ interface RunbookExecutor {
   execute(runbook: Runbook): Promise<ExecutionResult>;
 }
 
-class I2SRunbookExecutor implements RunbookExecutor {
+class LaunchloomRunbookExecutor implements RunbookExecutor {
   async execute(runbook: Runbook): Promise<ExecutionResult> {
     const execution = await this.createExecution(runbook);
     
@@ -970,6 +970,6 @@ console.log(`Cost: $${result.metrics.resources.costAccrued}`);
 
 ---
 
-**Owner**: I2S Runbook Team  
+**Owner**: Launchloom Runbook Team  
 **Contact**: runbooks@i2s.studio  
 **Documentation**: Updated December 2024

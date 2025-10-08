@@ -7,7 +7,7 @@
 
 ## 📋 Overview
 
-The Normalize Agent is the first stage in the I2S pipeline, responsible for sanitizing, validating, and structuring raw user input into a standardized format that can be safely processed by downstream agents.
+The Normalize Agent is the first stage in the Launchloom pipeline, responsible for sanitizing, validating, and structuring raw user input into a standardized format that can be safely processed by downstream agents.
 
 ## 🎯 Purpose
 
@@ -271,6 +271,6 @@ Upon successful processing, output is automatically forwarded to:
 
 ---
 
-**Maintainer**: I2S Pipeline Team  
+**Maintainer**: Launchloom Pipeline Team  
 **Last Updated**: December 2024  
 **Contact**: pipeline-agents@i2s.studio

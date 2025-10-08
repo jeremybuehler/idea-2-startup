@@ -1,8 +1,8 @@
 {
-  "name": "idea-2-startup-studio",
+  "name": "launchloom",
   "version": "0.1.0",
   "private": true,
-  "description": "Idea-to-Startup Studio - Transform raw ideas into structured startup scaffolds",
+  "description": "Launchloom – Weave raw ideas into launch-ready agent blueprints",
   "scripts": {
     "dev": "next dev",
     "warp-setup": "npm install && npm run validate && echo \"✅ WARP setup complete - ready for development\"",

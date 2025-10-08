@@ -1,4 +1,4 @@
-# 🔌 I2S Studio API Reference
+# 🔌 Launchloom API Reference
 
 **Version**: v2.1.0  
 **Last Updated**: December 2024  
@@ -7,7 +7,7 @@
 
 ## 📋 Overview
 
-The I2S Studio API provides programmatic access to the Idea-to-Startup multi-agent pipeline system. This RESTful API enables developers to submit startup ideas, track processing status, and retrieve generated artifacts including PRDs, wireframes, code scaffolds, and agent runbooks.
+The Launchloom API provides programmatic access to the Launchloom multi-agent pipeline system. This RESTful API enables developers to submit startup ideas, track processing status, and retrieve generated artifacts including PRDs, wireframes, code scaffolds, and agent runbooks.
 
 ### API Principles
 - **RESTful Design**: Standard HTTP methods and status codes
@@ -632,9 +632,9 @@ POST /v1/pipeline/batch
 ### JavaScript/TypeScript SDK
 ```typescript
 // npm install @i2s-studio/api-client
-import { I2SClient } from '@i2s-studio/api-client';
+import { LaunchloomClient } from '@i2s-studio/api-client';
 
-const client = new I2SClient({
+const client = new LaunchloomClient({
   apiKey: 'your-api-key',
   baseURL: 'https://api.i2s.studio'
 });
@@ -664,9 +664,9 @@ const prd = await client.pipeline.downloadArtifact(
 ### Python SDK
 ```python
 # pip install i2s-studio-api
-from i2s_studio import I2SClient
+from i2s_studio import LaunchloomClient
 
-client = I2SClient(api_key='your-api-key')
+client = LaunchloomClient(api_key='your-api-key')
 
 # Submit pipeline
 pipeline = client.pipeline.submit(

@@ -4,21 +4,21 @@ import '@fontsource-variable/inter'
 import '@fontsource/jetbrains-mono/latin.css'
 
 export const metadata: Metadata = {
-  title: 'I2S Studio - Idea to Startup Studio',
-  description: 'Transform raw ideas into structured startup scaffolds in minutes. Generate PRDs, wireframes, code scaffolds, and agent runbooks.',
-  keywords: ['startup', 'idea', 'prd', 'wireframes', 'code generation', 'ai'],
-  authors: [{ name: 'I2S Studio Team' }],
+  title: 'Launchloom — Weave launch-ready agents from any idea',
+  description: 'Launchloom turns raw ideas into production-ready agent blueprints: PRDs, runbooks, repo scaffolds, and compliance briefs in one package.',
+  keywords: ['launchloom', 'agents', 'startup', 'prd', 'wireframes', 'code generation', 'ai'],
+  authors: [{ name: 'Launchloom Team' }],
   robots: 'index, follow',
   openGraph: {
-    title: 'I2S Studio - Idea to Startup Studio',
-    description: 'Transform raw ideas into structured startup scaffolds in minutes.',
+    title: 'Launchloom — Weave launch-ready agents from any idea',
+    description: 'Launchloom delivers agent-powered startup dossiers in minutes.',
     type: 'website',
-    url: 'https://i2s-studio.com',
+    url: 'https://launchloom.com',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'I2S Studio - Idea to Startup Studio',
-    description: 'Transform raw ideas into structured startup scaffolds in minutes.',
+    title: 'Launchloom — Weave launch-ready agents from any idea',
+    description: 'Launchloom delivers agent-powered startup dossiers in minutes.',
   },
 }
 
