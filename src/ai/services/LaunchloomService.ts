@@ -3,8 +3,12 @@ import { TemplateGenerator, scoreIdea, toSlug } from '@/lib/business-logic';
 import { Dossier } from '@/types';
 import { LaunchloomAgentsService } from './LaunchloomAgentsService';
 import { ResearchService } from './ResearchService';
+import { ComplianceService } from './ComplianceService';
+import { EvaluationService } from './EvaluationService';
 import { Conductor } from '../agents/Conductor';
-import { IdeaContext, PipelineProgress } from '../types/Pipeline';
+import { IdeaContext, PipelineProgress, PipelineRunConfig, PipelineResult, StageMetric } from '../types/Pipeline';
+import { ComplianceReport } from '../types/compliance';
+import { EvaluationReport } from '../types/evaluation';
 
 interface LaunchloomServiceConfig {
   apiKey: string;
@@ -17,6 +21,8 @@ export class LaunchloomService extends EventEmitter {
   private agents?: LaunchloomAgentsService;
   private conductor?: Conductor;
   private researchService: ResearchService;
+  private complianceService: ComplianceService;
+  private evaluationService: EvaluationService;
   private config: LaunchloomServiceConfig;
   private activePipelines = new Map<string, PipelineExecution>();
 
@@ -24,6 +30,8 @@ export class LaunchloomService extends EventEmitter {
     super();
     this.config = config;
     this.researchService = new ResearchService();
+    this.complianceService = new ComplianceService();
+    this.evaluationService = new EvaluationService();
     
     if (config.enableLiveMode && config.apiKey) {
       this.initializeLiveServices(config.apiKey);
@@ -61,6 +69,7 @@ export class LaunchloomService extends EventEmitter {
       useLive?: boolean;
       qualityThreshold?: number;
       maxCost?: number;
+      pipelineConfig?: PipelineRunConfig;
     } = {}
   ): Promise<Dossier> {
     
@@ -83,19 +92,7 @@ export class LaunchloomService extends EventEmitter {
     options: any
   ): Promise<Dossier> {
     
-    const context: IdeaContext = {
-      ideaText,
-      userId: options.userId,
-      industry: options.industry,
-      targetMarket: options.targetMarket,
-      budget: options.budget,
-      timeline: options.timeline,
-      constraints: {
-        maxCost: options.maxCost || this.config.defaultBudgetLimit,
-        maxDuration: 30 * 60 * 1000, // 30 minutes
-        qualityThreshold: options.qualityThreshold || this.config.defaultQualityThreshold
-      }
-    };
+    const context = this.buildContext(ideaText, options)
 
     // Execute pipeline
     const conductor = this.conductor;
@@ -103,8 +100,17 @@ export class LaunchloomService extends EventEmitter {
       throw new Error('Conductor not initialized for live pipeline execution.');
     }
 
-    const result = await conductor.executePipeline(context);
-    
+    const result = await conductor.executePipeline(context, options.pipelineConfig ?? {});
+    const compliance = this.complianceService.evaluate(context, result.dossier);
+
+    if (compliance.status === 'fail') {
+      throw new Error(`Compliance guardrail failed: ${compliance.summary}`);
+    }
+
+    result.metadata.compliance = compliance;
+    result.metadata.evaluation = this.evaluationService.assess(result.dossier, result);
+    this.logTelemetry(result);
+
     // Convert to expected Dossier format
     return result.dossier;
   }
@@ -146,7 +152,54 @@ export class LaunchloomService extends EventEmitter {
       api
     };
 
+    const context = this.buildContext(ideaText, options);
+    const compliance = this.complianceService.evaluate(context, dossier);
+    if (compliance.status === 'fail') {
+      throw new Error(`Compliance guardrail failed: ${compliance.summary}`);
+    }
+    const simulatedResult: PipelineResultLike = {
+      dossier,
+      metadata: {
+        processingTime: 0,
+        totalCost: 0,
+        stagesCompleted: 9,
+        agentsInvolved: [],
+        stageMetrics: [],
+        compliance
+      }
+    }
+    simulatedResult.metadata.evaluation = this.evaluationService.assess(dossier, simulatedResult as any)
+    this.logTelemetry(simulatedResult as any)
+
     return dossier;
+  }
+
+  private buildContext(
+    ideaText: string,
+    options: {
+      userId?: string;
+      industry?: string;
+      targetMarket?: string;
+      budget?: string;
+      timeline?: string;
+      qualityThreshold?: number;
+      maxCost?: number;
+      pipelineConfig?: PipelineRunConfig;
+    }
+  ): IdeaContext {
+    return {
+      ideaText,
+      userId: options.userId,
+      industry: options.industry,
+      targetMarket: options.targetMarket,
+      budget: options.budget,
+      timeline: options.timeline,
+      constraints: {
+        maxCost: options.maxCost || this.config.defaultBudgetLimit,
+        maxDuration: 30 * 60 * 1000,
+        qualityThreshold: options.qualityThreshold || this.config.defaultQualityThreshold
+      }
+    }
   }
 
   /**
@@ -378,6 +431,20 @@ export class LaunchloomService extends EventEmitter {
       }
     }
   }
+
+  private logTelemetry(result: PipelineResult | PipelineResultLike): void {
+    try {
+      console.info('launchloom.telemetry', {
+        processingTimeMs: result.metadata.processingTime,
+        totalCost: result.metadata.totalCost,
+        stageMetrics: result.metadata.stageMetrics,
+        complianceStatus: result.metadata.compliance?.status,
+        evaluationScore: result.metadata.evaluation?.score
+      })
+    } catch (error) {
+      console.warn('Telemetry logging failed', error)
+    }
+  }
 }
 
 interface PipelineExecution {
@@ -385,6 +452,19 @@ interface PipelineExecution {
   ideaText: string;
   startTime: number;
   progress: PipelineProgress;
+}
+
+interface PipelineResultLike {
+  dossier: Dossier;
+  metadata: {
+    processingTime: number;
+    totalCost: number;
+    stagesCompleted: number;
+    agentsInvolved: string[];
+    stageMetrics?: StageMetric[];
+    compliance?: ComplianceReport;
+    evaluation?: EvaluationReport;
+  };
 }
 
 // Singleton instance for use throughout the app

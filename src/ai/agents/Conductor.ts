@@ -2,7 +2,7 @@ import { LaunchloomAgentsService } from '../services/LaunchloomAgentsService';
 import { ResearchService } from '../services/ResearchService';
 import { MarketIntel } from '../types/market';
 import { Logger } from '../utils/Logger';
-import { IdeaContext, PipelineStage, PipelineResult, PipelineProgress } from '../types/Pipeline';
+import { IdeaContext, PipelineStage, PipelineResult, PipelineProgress, PipelineRunConfig, StageMetric } from '../types/Pipeline';
 import { EventEmitter } from 'events';
 
 interface ConductorConfig {
@@ -69,7 +69,7 @@ export class Conductor extends EventEmitter {
   /**
    * Execute the full Launchloom pipeline for an idea
    */
-  async executePipeline(context: IdeaContext): Promise<PipelineResult> {
+  async executePipeline(context: IdeaContext, runConfig: PipelineRunConfig = {}): Promise<PipelineResult> {
     const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const logger = this.logger.withContext(executionId, context.userId);
     
@@ -98,7 +98,7 @@ export class Conductor extends EventEmitter {
 
     try {
       // Execute pipeline stages
-      const result = await this.runPipelineStages(executionId);
+      const result = await this.runPipelineStages(executionId, runConfig);
       
       // Emit completion event
       this.emit('pipeline:completed', {
@@ -134,19 +134,28 @@ export class Conductor extends EventEmitter {
   /**
    * Execute all pipeline stages in sequence
    */
-  private async runPipelineStages(executionId: string): Promise<PipelineResult> {
+  private async runPipelineStages(executionId: string, runConfig: PipelineRunConfig): Promise<PipelineResult> {
     const execution = this.activeExecutions.get(executionId)!;
     const logger = this.logger.withContext(executionId, execution.context.userId);
     
     const results: Record<string, any> = {};
     let overallQuality = 0;
     let stagesCompleted = 0;
+    const stageMetrics: StageMetric[] = [];
 
     // Execute stages in order
     for (const stage of this.stages) {
       const stageExecution = execution.stages.get(stage)!;
       
       try {
+        const stageConfiguration = runConfig.stages?.[stage];
+        if (stageConfiguration?.enabled === false) {
+          stageExecution.status = 'skipped';
+          stageMetrics.push({ stage, durationMs: 0, cost: 0, status: 'skipped' });
+          logger.info(`Skipping stage ${stage} via configuration override`);
+          continue;
+        }
+
         // Check budget limit
         if (execution.totalCost >= this.config.budgetLimit) {
           logger.warn(`Budget limit reached (${execution.totalCost}), stopping pipeline`);
@@ -188,6 +197,14 @@ export class Conductor extends EventEmitter {
         overallQuality += stageResult.quality;
         stagesCompleted++;
 
+        stageMetrics.push({
+          stage,
+          durationMs: (stageExecution.endTime - stageExecution.startTime) || 0,
+          cost: stageExecution.cost,
+          status: stageExecution.status,
+          quality: stageExecution.qualityScore
+        });
+
         this.emit('stage:completed', {
           executionId,
           stage,
@@ -205,6 +222,14 @@ export class Conductor extends EventEmitter {
         stageExecution.status = 'failed';
         stageExecution.endTime = Date.now();
         stageExecution.error = error instanceof Error ? error.message : 'Unknown error';
+
+        stageMetrics.push({
+          stage,
+          durationMs: (stageExecution.endTime - stageExecution.startTime) || 0,
+          cost: stageExecution.cost,
+          status: stageExecution.status,
+          quality: stageExecution.qualityScore
+        });
 
         this.emit('stage:failed', {
           executionId,
@@ -256,7 +281,8 @@ export class Conductor extends EventEmitter {
         totalCost: execution.totalCost,
         stagesCompleted,
         agentsInvolved: this.stages.slice(0, stagesCompleted),
-        marketIntel: results.__marketIntel
+        marketIntel: results.__marketIntel,
+        stageMetrics
       },
       overallQuality
     };

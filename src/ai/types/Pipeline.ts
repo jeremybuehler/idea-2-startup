@@ -1,6 +1,8 @@
 // Core pipeline types for Launchloom agent system
 
 import { MarketIntel } from './market'
+import { ComplianceReport } from './compliance'
+import { EvaluationReport } from './evaluation'
 
 export type PipelineStage = 
   | 'normalize'
@@ -12,6 +14,14 @@ export type PipelineStage =
   | 'code_scaffold'
   | 'api_design'
   | 'export';
+
+export interface StageConfiguration {
+  enabled?: boolean;
+}
+
+export interface PipelineRunConfig {
+  stages?: Partial<Record<PipelineStage, StageConfiguration>>;
+}
 
 export interface IdeaContext {
   ideaText: string;
@@ -65,8 +75,19 @@ export interface PipelineResult {
     stagesCompleted: number;
     agentsInvolved: PipelineStage[];
     marketIntel?: MarketIntel;
+    compliance?: ComplianceReport;
+    stageMetrics?: StageMetric[];
+    evaluation?: EvaluationReport;
   };
   overallQuality: number;
+}
+
+export interface StageMetric {
+  stage: PipelineStage;
+  durationMs: number;
+  cost: number;
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  quality?: number;
 }
 
 export interface PipelineProgress {
