@@ -1,13 +1,21 @@
 """SQLAlchemy models for Launchloom."""
 
-from app.models.audit import AuditLog
-from app.models.dossier import Dossier
-from app.models.idea import Idea
 from app.models.user import User
+from app.models.workspace import (
+    ComplianceStatus,
+    MembershipStatus,
+    Workspace,
+    WorkspaceMember,
+    WorkspaceRole,
+    WorkspaceRun,
+)
 
 __all__ = [
     "User",
-    "Idea", 
-    "Dossier",
-    "AuditLog",
+    "Workspace",
+    "WorkspaceMember",
+    "WorkspaceRun",
+    "WorkspaceRole",
+    "MembershipStatus",
+    "ComplianceStatus",
 ]

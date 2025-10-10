@@ -236,7 +236,8 @@ Coverage:    100% on critical modules
 # Required for live agent runs
 OPENAI_API_KEY=your_openai_api_key_here
 NEXT_PUBLIC_USE_LIVE=false           # Toggle to true when using the backend
-NEXT_PUBLIC_API_BASE=                # Backend API base URL when live
+NEXT_PUBLIC_API_BASE=                # Backend base URL ("/api/v1" is appended automatically)
+LAUNCHLOOM_BACKEND_URL=              # Optional explicit API base for server-side persistence
 
 # Optional lead capture (e.g. Formspree, Airtable, Zapier webhook)
 NEXT_PUBLIC_LEAD_CAPTURE_URL=https://formspree.io/f/mgeglbpz  # Default Formspree endpoint (replace with your own)

@@ -5,7 +5,7 @@ import { LaunchloomAgentsService } from './LaunchloomAgentsService';
 import { ResearchService } from './ResearchService';
 import { ComplianceService } from './ComplianceService';
 import { EvaluationService } from './EvaluationService';
-import { WorkspaceService } from './WorkspaceService';
+import { WorkspaceService, WorkspaceRunPersistPayload } from './WorkspaceService';
 import { IntegrationRegistry } from './IntegrationRegistry';
 import { ManagedOpsService } from './ManagedOpsService';
 import { Conductor } from '../agents/Conductor';
@@ -121,7 +121,7 @@ export class LaunchloomService extends EventEmitter {
     result.metadata.compliance = compliance;
     result.metadata.evaluation = this.evaluationService.assess(result.dossier, result);
     this.logTelemetry(result);
-    this.recordWorkspaceRun(options.workspaceId, options.workspaceName, result);
+    await this.recordWorkspaceRun(options.workspaceId, options.workspaceName, result, options.pipelineConfig);
 
     // Convert to expected Dossier format
     return result.dossier;
@@ -182,7 +182,7 @@ export class LaunchloomService extends EventEmitter {
     }
     simulatedResult.metadata.evaluation = this.evaluationService.assess(dossier, simulatedResult as any)
     this.logTelemetry(simulatedResult as any)
-    this.recordWorkspaceRun(options.workspaceId, options.workspaceName, simulatedResult as any)
+    await this.recordWorkspaceRun(options.workspaceId, options.workspaceName, simulatedResult as any, options.pipelineConfig)
 
     return dossier;
   }
@@ -460,20 +460,48 @@ export class LaunchloomService extends EventEmitter {
     }
   }
 
-  private recordWorkspaceRun(workspaceId: string | undefined, workspaceName: string | undefined, result: PipelineResult | PipelineResultLike): void {
+  private async recordWorkspaceRun(
+    workspaceId: string | undefined,
+    workspaceName: string | undefined,
+    result: PipelineResult | PipelineResultLike,
+    pipelineConfig?: PipelineRunConfig
+  ): Promise<void> {
     if (!workspaceId) return
-    const workspace = this.workspaceService.ensureWorkspace(workspaceId, workspaceName)
-    const complianceStatus = result.metadata.compliance?.status ?? 'pass'
-    const evaluationScore = result.metadata.evaluation?.score ?? 0
-    this.workspaceService.recordRun(workspace.id, {
-      runId: (result as PipelineResult).executionId ?? `sim-${Date.now()}`,
-      idea: result.dossier.title,
-      createdAt: new Date().toISOString(),
-      complianceStatus,
-      evaluationScore,
-      cost: result.metadata.totalCost
-    })
-    this.managedOpsService.record((result as PipelineResult).executionId ?? `sim-${Date.now()}`, result.metadata.evaluation, result.metadata.compliance)
+
+    try {
+      const workspace = await this.workspaceService.ensureWorkspace(workspaceId, workspaceName)
+      const runPayload: WorkspaceRunPersistPayload = {
+        runId: (result as PipelineResult).executionId ?? `sim-${Date.now()}`,
+        executionId: (result as PipelineResult).executionId,
+        ideaTitle: result.dossier.title,
+        ideaSlug: toSlug(result.dossier.title),
+        ideaOneLiner: result.dossier.one_liner,
+        ideaText: result.dossier.idea_text,
+        complianceStatus: result.metadata.compliance?.status ?? 'pass',
+        evaluationScore: result.metadata.evaluation?.score,
+        overallQuality: (result as PipelineResult).overallQuality,
+        totalCost: result.metadata.totalCost,
+        durationMs: result.metadata.processingTime,
+        stageMetrics: result.metadata.stageMetrics ?? [],
+        telemetry: {
+          stagesCompleted: result.metadata.stagesCompleted,
+          agentsInvolved: result.metadata.agentsInvolved,
+          processingTime: result.metadata.processingTime,
+        },
+        complianceReport: result.metadata.compliance ?? null,
+        evaluationReport: result.metadata.evaluation ?? null,
+        pipelineConfig: pipelineConfig ?? undefined,
+      }
+
+      await this.workspaceService.recordRun(workspace.id, runPayload)
+      this.managedOpsService.record(
+        (result as PipelineResult).executionId ?? `sim-${Date.now()}`,
+        result.metadata.evaluation,
+        result.metadata.compliance
+      )
+    } catch (error) {
+      console.warn('Failed to persist workspace run', error)
+    }
   }
 }
 

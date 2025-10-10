@@ -82,6 +82,14 @@ SENTRY_DSN=your-sentry-dsn
 - `GET /api/v1/dossiers/{id}` - Get dossier status/results
 - `POST /api/v1/dossiers/{id}/regenerate` - Regenerate specific sections
 
+### Workspaces & Telemetry
+- `GET /api/v1/workspaces` - List workspaces with member metadata
+- `POST /api/v1/workspaces` - Create a workspace (slug inferred from name when omitted)
+- `GET /api/v1/workspaces/{id}` - Fetch workspace by public ID or slug with recent runs
+- `GET /api/v1/workspaces/{id}/runs` - List persisted pipeline runs for a workspace
+- `POST /api/v1/workspaces/{id}/runs` - Persist run telemetry, compliance, and evaluation data
+- `GET /api/v1/workspaces/{id}/runs/{run_id}` - Retrieve a specific run summary
+
 ### Export & Integration
 - `GET /api/v1/dossiers/{id}/export` - Export dossier as JSON/ZIP
 - `POST /api/v1/github/create-repo` - Create GitHub repository
@@ -98,6 +106,7 @@ See `app/models/` for complete SQLAlchemy models:
 - Ideas with versioning and scoring
 - Dossiers with generated artifacts
 - Audit logs for compliance
+- Workspaces with members and persisted run telemetry
 - Background job tracking
 
 ## Development
