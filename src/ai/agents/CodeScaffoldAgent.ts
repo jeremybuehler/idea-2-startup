@@ -201,7 +201,7 @@ Respond with valid JSON only.`
               { name: 'content', type: 'text', nullable: false },
               { name: 'created_at', type: 'timestamp', nullable: false }
             ],
-            relationships: [{ type: 'many-to-one', target: 'users' }]
+            relationships: []
           }
         ]
       },
