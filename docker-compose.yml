@@ -1,0 +1,96 @@
+# Launchloom Docker Compose Configuration
+# For local development and staging environments
+
+version: '3.8'
+
+services:
+  # Frontend (Next.js)
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE=http://api:8000/api/v1
+      - NEXT_PUBLIC_USE_LIVE=true
+    depends_on:
+      - api
+      - redis
+    networks:
+      - launchloom
+
+  # Backend API (FastAPI)
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://launchloom:launchloom@db:5432/launchloom
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - db
+      - redis
+    networks:
+      - launchloom
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=launchloom
+      - POSTGRES_PASSWORD=launchloom
+      - POSTGRES_DB=launchloom
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - launchloom
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U launchloom"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - launchloom
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Database migrations
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: alembic upgrade head
+    environment:
+      - DATABASE_URL=postgresql://launchloom:launchloom@db:5432/launchloom
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - launchloom
+
+networks:
+  launchloom:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
