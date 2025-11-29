@@ -21,11 +21,11 @@
     "prepare": "npx playwright install"
   },
   "dependencies": {
-    "@openai/agents": "^0.1.9",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@hookform/resolvers": "^3.3.0",
+    "@openai/agents": "^0.1.9",
     "@radix-ui/react-dialog": "^1.0.0",
     "@radix-ui/react-label": "^2.0.0",
     "@radix-ui/react-progress": "^1.0.0",
@@ -56,7 +56,7 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.40.0",
+    "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
